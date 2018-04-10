@@ -1,0 +1,11 @@
+node_modules/
+.tscache/
+.vscode/
+*.tmp.*
+dist/
+**/.baseDir.js
+**/.baseDir.ts
+package-lock.json
+www/package-lock.json
+.DS_Store
+config.dev.json
