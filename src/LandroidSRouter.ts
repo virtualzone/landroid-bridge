@@ -1,5 +1,7 @@
 import { BaseRouter } from "./BaseRouter";
 import { Request, Response, NextFunction } from "express";
+import { LandroidDataset } from "./LandroidDataset";
+import { LandroidS } from "./LandroidS";
 
 class LandroidSRouter extends BaseRouter {
     protected init(): void {
@@ -7,7 +9,12 @@ class LandroidSRouter extends BaseRouter {
     }
 
     private status(req: Request, res: Response, next: NextFunction): void {
-        this.ok(res);
+        let latestUpdate: LandroidDataset = LandroidS.getInstance().getLatestUpdate();
+        if (latestUpdate) {
+            res.status(200).send(latestUpdate.serialize());
+        } else {
+            this.internalServerError(res);
+        }
     }
 }
 

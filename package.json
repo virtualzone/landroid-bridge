@@ -8,7 +8,8 @@
     "grunt": "grunt",
     "start": "node dist/server.js",
     "dev": "npm run clean && npm run grunt && NODE_ENV=dev node dist/server.js",
-    "clean": "rm -rf dist/"
+    "clean": "rm -rf dist/",
+    "build-prod": "npm run clean && npm run grunt && npm prune --production"
   },
   "author": "",
   "license": "ISC",
@@ -27,6 +28,7 @@
   "dependencies": {
     "body-parser": "^1.18.2",
     "express": "^4.16.3",
-    "iobroker.landroid-s": "^2.0.1"
+    "iobroker.landroid-s": "^2.0.1",
+    "moment": "^2.22.0"
   }
 }

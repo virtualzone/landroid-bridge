@@ -1,9 +1,12 @@
 import * as LandroidCloud from "iobroker.landroid-s/lib/landroid-cloud-2";
 import { Config } from "./Config";
+import { LandroidDataset } from "./LandroidDataset";
 
 export class LandroidS {
     private static INSTANCE: LandroidS = new LandroidS();
+    private initialized: boolean = false;
     private landroidCloud: LandroidCloud;
+    private latestUpdate: LandroidDataset;
 
     constructor() {
         if (LandroidS.INSTANCE) {
@@ -11,7 +14,15 @@ export class LandroidS {
         }
     }
 
+    public getLatestUpdate(): LandroidDataset {
+        return this.latestUpdate;
+    }
+
     public init(): void {
+        if (this.initialized) {
+            throw new Error("Already initialized!");
+        }
+        this.initialized = true;
         let adapter = {
             config: Config.getInstance().get("landroid-s"),
             log: {
@@ -33,6 +44,7 @@ export class LandroidS {
 
     private updateListener(status: any) {
         console.log("incoming update: " + JSON.stringify(status));
+        this.latestUpdate = new LandroidDataset(status);
     }
 
     public static getInstance(): LandroidS {
