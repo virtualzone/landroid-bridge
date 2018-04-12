@@ -1,6 +1,7 @@
 import * as LandroidCloud from "iobroker.landroid-s/lib/landroid-cloud-2";
 import { Config } from "./Config";
 import { LandroidDataset } from "./LandroidDataset";
+import { Mqtt } from "./Mqtt";
 
 export class LandroidS {
     private static INSTANCE: LandroidS = new LandroidS();
@@ -43,8 +44,9 @@ export class LandroidS {
     }
 
     private updateListener(status: any) {
-        console.log("incoming update: " + JSON.stringify(status));
+        console.log("Incoming Landroid Cloud update: %s", JSON.stringify(status));
         this.latestUpdate = new LandroidDataset(status);
+        Mqtt.getInstance().publish(JSON.stringify(this.latestUpdate.serialize()));
     }
 
     public static getInstance(): LandroidS {

@@ -6,11 +6,13 @@ import { Router, NextFunction } from 'express-serve-static-core';
 import { EventEmitter } from 'events';
 import LandroidSRouter from './LandroidSRouter';
 import { LandroidS } from './LandroidS';
+import { Mqtt } from './Mqtt';
 
 export class App extends EventEmitter {
     private static readonly INSTANCE: App = new App();
     public readonly express: express.Application;
     public server: Server;
+    public mqtt: Mqtt;
     private devEnvironment: boolean = false;
 
     constructor() {
@@ -31,11 +33,19 @@ export class App extends EventEmitter {
     }
 
     public start(): void {
+        this.setupMqtt();
         this.express.set("trust proxy", true);
         this.setupRoutes();
         LandroidS.getInstance().init();
         this.emit("appStarted");
         console.log("Server ready");
+    }
+
+    private setupMqtt(): void {
+        let config = Config.getInstance().get("mqtt");
+        if (config && config.enable) {
+            this.mqtt = Mqtt.getInstance();
+        }
     }
 
     private setupRoutes(): void {

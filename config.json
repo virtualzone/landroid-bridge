@@ -1,6 +1,15 @@
 {
+    "http": {
+        "port": 3000
+    },
     "landroid-s": {
+        "enable": true,
         "email": "really@change.me",
         "pwd": "PASSWORD"
+    },
+    "mqtt": {
+        "enable": true,
+        "url": "mqtt://username:password@localhost",
+        "topic": "landroid"
     }
 }

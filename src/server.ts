@@ -1,12 +1,13 @@
 import * as http from 'http';
 import * as debug from 'debug';
 import { App } from './App';
+import { Config } from './Config';
 
 console.log("Starting Landroid Bridge...");
 
 debug('ts-express:server');
 
-const port = normalizePort(process.env.PORT || 3000);
+const port = normalizePort(process.env.PORT || Config.getInstance().get("http").port || 3000);
 
 console.log("Setting port to %d...", port);
 App.getInstance().express.set('port', port);
