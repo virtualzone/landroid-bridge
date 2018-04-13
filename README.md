@@ -29,6 +29,24 @@ Publishes readings from the Worx Landroid S Lawn Mower via HTTP (REST, JSON) and
     node dist/server.js
     ```
 
+## Connecting to OpenHAB
+To connect this Landroid Bridge to [OpenHAB](http://www.openhab.org/), add the following configurations to your OpenHAB installation after Landroid Bridge is up and running successfully (see above):
+1. Install the [MQTT Binding](https://docs.openhab.org/addons/bindings/mqtt1/readme.html) in OpenHAB (e.g. using the Paper UI).
+1. Add an MQTT configuration in ```services/mqtt.cfg```:
+    ```
+    mqtt.url=tcp://mqtt:1883
+    mqtt.user=MQTT_USERNAME
+    mqtt.pwd=MQTT_PASSWORD
+    ```
+1. Add items (e.g. in ```items/mower.items```):
+    ```
+    Number Landroid_ErrorCode "Error Code [%d]" <lawnmower> {mqtt="<[mqtt:landroid/status/errorCode:state:default]"}
+    String Landroid_ErrorDescription "Error [%s]" <lawnmower> {mqtt="<[mqtt:landroid/status/errorDescription:state:default]"}
+    Number Landroid_StatusCode "Status Code [%d]" <lawnmower> {mqtt="<[mqtt:landroid/status/statusCode:state:default]"}
+    String Landroid_StatusDescription "Status [%s]" <lawnmower> {mqtt="<[mqtt:landroid/status/statusDescription:state:default]"}
+    String Landroid_DateTime "Last Update [%s]" <calendar> {mqtt="<[mqtt:landroid/status/dateTime:state:default]"}
+    ```
+
 ## HTTP REST URLs
 * Get status: /landroid-s/status
 
