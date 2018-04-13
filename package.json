@@ -1,7 +1,7 @@
 {
   "name": "landroid-bridge",
-  "version": "0.0.1",
-  "description": "",
+  "version": "0.1.0",
+  "description": "Publishes readings from the Worx Landroid S Lawn Mower via HTTP (REST, JSON) and MQTT.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -11,8 +11,8 @@
     "clean": "rm -rf dist/",
     "build-prod": "npm run clean && npm run grunt && npm prune --production"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "weweave UG <mail@weweave.net>",
+  "license": "GPL-3.0",
   "devDependencies": {
     "@types/express": "^4.11.1",
     "@types/node": "^8.10.7",
