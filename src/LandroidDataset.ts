@@ -25,37 +25,7 @@ export class LandroidDataset {
 
     constructor(readings: any) {
         if (readings) {
-            if (readings["cfg"]) {
-                this.language = readings["cfg"]["lg"];
-                this.dateTime = moment(readings["cfg"]["dt"] + " " + readings["cfg"]["tm"], "DD/MM/YYYY HH:mm:ss");
-                this.rainDelay = readings["cfg"]["rd"];
-                this.serialNumber = readings["cfg"]["sn"];
-                if (readings["cfg"]["sc"]) {
-                    this.active = (readings["cfg"]["sc"]["m"] ? true : false);
-                    this.timeExtension = Number(readings["cfg"]["sc"]["p"]).valueOf();
-                }
-            }
-            if (readings["dat"]) {
-                if (readings["dat"]["st"]) {
-                    this.totalTime = Number(readings["dat"]["st"]["wt"]).valueOf();
-                    this.totalDistance = Number(readings["dat"]["st"]["d"]).valueOf();
-                    this.totalBladeTime = Number(readings["dat"]["st"]["b"]).valueOf();
-                }
-                if (readings["dat"]["bt"]) {
-                    this.batteryChargeCycle = Number(readings["dat"]["bt"]["nr"]).valueOf();
-                    this.batteryCharging = (readings["dat"]["bt"]["c"] ? true : false);
-                    this.batteryVoltage = Number(readings["dat"]["bt"]["v"]).valueOf();
-                    this.batteryTemperature = Number(readings["dat"]["bt"]["t"]).valueOf();
-                    this.batteryLevel = Number(readings["dat"]["bt"]["p"]).valueOf();
-                }
-                this.macAddress = readings["dat"]["mac"];
-                this.firmware = readings["dat"]["fw"];
-                this.wifiQuality = Number(readings["dat"]["rsi"]).valueOf();
-                this.statusCode = Number(readings["dat"]["ls"]).valueOf();
-                this.statusDescription = LandroidDataset.STATUS_CODES[this.statusCode];
-                this.errorCode = Number(readings["dat"]["le"]).valueOf();
-                this.errorDescription = LandroidDataset.ERROR_CODES[this.errorCode];
-            }
+            this.parse(readings);
         }
     }
 
@@ -83,6 +53,40 @@ export class LandroidDataset {
             statusCode: this.statusCode,
             statusDescription: this.statusDescription
         };
+    }
+
+    private parse(readings: any): void {
+        if (readings["cfg"]) {
+            this.language = readings["cfg"]["lg"];
+            this.dateTime = moment(readings["cfg"]["dt"] + " " + readings["cfg"]["tm"], "DD/MM/YYYY HH:mm:ss");
+            this.rainDelay = readings["cfg"]["rd"];
+            this.serialNumber = readings["cfg"]["sn"];
+            if (readings["cfg"]["sc"]) {
+                this.active = (readings["cfg"]["sc"]["m"] ? true : false);
+                this.timeExtension = Number(readings["cfg"]["sc"]["p"]).valueOf();
+            }
+        }
+        if (readings["dat"]) {
+            if (readings["dat"]["st"]) {
+                this.totalTime = Number(readings["dat"]["st"]["wt"]).valueOf();
+                this.totalDistance = Number(readings["dat"]["st"]["d"]).valueOf();
+                this.totalBladeTime = Number(readings["dat"]["st"]["b"]).valueOf();
+            }
+            if (readings["dat"]["bt"]) {
+                this.batteryChargeCycle = Number(readings["dat"]["bt"]["nr"]).valueOf();
+                this.batteryCharging = (readings["dat"]["bt"]["c"] ? true : false);
+                this.batteryVoltage = Number(readings["dat"]["bt"]["v"]).valueOf();
+                this.batteryTemperature = Number(readings["dat"]["bt"]["t"]).valueOf();
+                this.batteryLevel = Number(readings["dat"]["bt"]["p"]).valueOf();
+            }
+            this.macAddress = readings["dat"]["mac"];
+            this.firmware = readings["dat"]["fw"];
+            this.wifiQuality = Number(readings["dat"]["rsi"]).valueOf();
+            this.statusCode = Number(readings["dat"]["ls"]).valueOf();
+            this.statusDescription = LandroidDataset.STATUS_CODES[this.statusCode];
+            this.errorCode = Number(readings["dat"]["le"]).valueOf();
+            this.errorDescription = LandroidDataset.ERROR_CODES[this.errorCode];
+        }
     }
 
     public static STATUS_CODES = {

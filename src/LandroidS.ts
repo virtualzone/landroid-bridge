@@ -45,8 +45,20 @@ export class LandroidS {
 
     private updateListener(status: any) {
         console.log("Incoming Landroid Cloud update: %s", JSON.stringify(status));
-        this.latestUpdate = new LandroidDataset(status);
-        Mqtt.getInstance().publish(JSON.stringify(this.latestUpdate.serialize()));
+        let dataset: LandroidDataset = new LandroidDataset(status);
+        this.publishMqtt(this.latestUpdate, dataset);
+        this.latestUpdate = dataset;
+    }
+
+    private publishMqtt(previousDataset: LandroidDataset, currentDataset: LandroidDataset): void {
+        let prev = (previousDataset ? previousDataset.serialize() : null);
+        let curr = currentDataset.serialize();
+        for (let key of Object.keys(curr)) {
+            let val = curr[key];
+            if (!prev || prev[key] !== curr[key]) {
+                Mqtt.getInstance().publish("status/" + key, String(val), true);
+            }
+        }
     }
 
     public static getInstance(): LandroidS {
