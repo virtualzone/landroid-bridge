@@ -2,6 +2,11 @@
 Publishes readings from the Worx Landroid S Lawn Mower via HTTP (REST, JSON) and MQTT.
 
 ## Setup
+### Prerequisites
+* If you want to use MQTT instead of HTTP, you need to have an MQTT Broker like [Eclipse Mosquitto](http://mosquitto.org/) installed.
+* If you want to build from source, make sure you have [Node.js](https://nodejs.org/en/) installed.
+* If you want to use the pre-built Docker image, you need to have [Docker](https://www.docker.com/) up and running.
+
 ### Using Docker
 1. Create a ```config.json``` file (see template in source).
 1. Run the image like this (assuming you want to link it with your MySQL container):
