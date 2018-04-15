@@ -102,7 +102,9 @@ export class LandroidDataset {
         9: "Trapped",
         10: "Blade blocked",
         11: "Debug",
-        12: "Remote control"
+        12: "Remote control",
+        30: "Going home",
+        32: "Cutting edge"
     };
 
     public static ERROR_CODES = {
@@ -111,7 +113,7 @@ export class LandroidDataset {
         2: "Lifted",
         3: "Wire missing",
         4: "Outside wire",
-        5: "Raining",
+        5: "Rain delay",
         6: "Close door to mow",
         7: "Close door to go home",
         8: "Blade motor blocked",
