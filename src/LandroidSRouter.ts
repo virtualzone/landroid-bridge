@@ -6,6 +6,10 @@ import { LandroidS } from "./LandroidS";
 class LandroidSRouter extends BaseRouter {
     protected init(): void {
         this.router.get("/status", this.status.bind(this));
+        this.router.post("/start", this.startMower.bind(this));
+        this.router.post("/stop", this.stopMower.bind(this));
+        this.router.put("/set/rainDelay/:value", this.setRainDelay.bind(this));
+        this.router.put("/set/timeExtension/:value", this.setTimeExtension.bind(this));
     }
 
     private status(req: Request, res: Response, next: NextFunction): void {
@@ -14,6 +18,36 @@ class LandroidSRouter extends BaseRouter {
             res.status(200).send(latestUpdate.serialize());
         } else {
             this.internalServerError(res);
+        }
+    }
+
+    private startMower(req: Request, res: Response, next: NextFunction): void {
+        LandroidS.getInstance().startMower();
+        this.ok(res);
+    }
+
+    private stopMower(req: Request, res: Response, next: NextFunction): void {
+        LandroidS.getInstance().stopMower();
+        this.ok(res);
+    }
+
+    private setRainDelay(req: Request, res: Response, next: NextFunction): void {
+        let value = req.params.value;
+        try {
+            LandroidS.getInstance().setRainDelay(value);
+            this.ok(res);
+        } catch (e) {
+            this.badRequest(res, e.message);
+        }
+    }
+
+    private setTimeExtension(req: Request, res: Response, next: NextFunction): void {
+        let value = req.params.value;
+        try {
+            LandroidS.getInstance().setTimeExtension(value);
+            this.ok(res);
+        } catch (e) {
+            this.badRequest(res, e.message);
         }
     }
 }

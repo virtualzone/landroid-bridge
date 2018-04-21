@@ -33,6 +33,7 @@ Publishes readings from the Worx Landroid S Lawn Mower via HTTP (REST, JSON) and
     ```
     node dist/server.js
     ```
+1. Optional: Set up an init.d script to start the bridge on system startup (Linux only, see example in initd-script folder).
 
 ## Connecting to OpenHAB
 To connect this Landroid Bridge to [OpenHAB](http://www.openhab.org/), add the following configurations to your OpenHAB installation after Landroid Bridge is up and running successfully (see above):
@@ -53,9 +54,14 @@ To connect this Landroid Bridge to [OpenHAB](http://www.openhab.org/), add the f
     ```
 
 ## HTTP REST URLs
-* Get status: /landroid-s/status
+* Get status as JSON: GET /landroid-s/status
+* Start mower: POST /landroid-s/start
+* Stop mower: POST /landroid-s/stop
+* Set rain delay: PUT /landroid-s/set/rainDelay/x (where 0 <= x <= 300)
+* Set time extension: PUT /landroid-s/set/timeExtension/x (where -100 <= x <= 100)
 
 ## MQTT Topics
+## Published by the bridge (you can listen on these topics with your application)
 * landroid/status/language
 * landroid/status/dateTime
 * landroid/status/macAddress
@@ -77,3 +83,9 @@ To connect this Landroid Bridge to [OpenHAB](http://www.openhab.org/), add the f
 * landroid/status/errorDescription: 
 * landroid/status/statusCode
 * landroid/status/statusDescription
+
+### Published by your application (the bridge will perform updates)
+* landroid/start (starts the mower)
+* landroid/stop (stops the mower)
+* landroid/set/rainDelay (sets rain delay in minutes, supply delay value as payload)
+* landroid/set/timeExtension (sets time extension in percent, supply percentage value as payload)

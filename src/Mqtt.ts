@@ -46,6 +46,9 @@ export class Mqtt extends EventEmitter {
 
     private onMessage(topic: string, payload: Buffer): void {
         console.log("Incoming MQTT message to topic %s: %s", topic, payload.toString());
+        if (topic.startsWith(this.config.topic)) {
+            topic = topic.substr(String(this.config.topic).length);
+        }
         this.emit("mqttMessage", topic, payload);
     }
 

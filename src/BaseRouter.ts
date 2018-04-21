@@ -29,9 +29,9 @@ export abstract class BaseRouter {
         });
     }
 
-    protected badRequest(res: Response, errorCode?: number): void {
+    protected badRequest(res: Response, message?: string, errorCode?: number): void {
         res.status(400).send({
-            message: "Bad Request",
+            message: (message ? message : "Bad Request"),
             status: res.status,
             errorCode: (errorCode ? errorCode : 0)
         });
