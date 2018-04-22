@@ -85,7 +85,7 @@ To connect this Landroid Bridge to [OpenHAB](http://www.openhab.org/), add the f
 * landroid/status/statusDescription
 
 ### Published by your application (the bridge will perform updates)
-* landroid/start (starts the mower)
-* landroid/stop (stops the mower)
+* landroid/set/start (starts the mower)
+* landroid/set/stop (stops the mower)
 * landroid/set/rainDelay (sets rain delay in minutes, supply delay value as payload)
 * landroid/set/timeExtension (sets time extension in percent, supply percentage value as payload)
