@@ -104,9 +104,9 @@ export class LandroidS {
 
     private onMqttMessage(topic: string, payload: any): void {
         try {
-            if (topic === "start") {
+            if (topic === "set/start") {
                 this.startMower();
-            } else if (topic === "stop") {
+            } else if (topic === "set/stop") {
                 this.stopMower();
             } else if (topic === "set/rainDelay") {
                 this.setRainDelay(payload);
