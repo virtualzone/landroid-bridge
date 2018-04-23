@@ -35,6 +35,9 @@ Publishes readings from the Worx Landroid S Lawn Mower via HTTP (REST, JSON) and
     ```
 1. Optional: Set up an init.d script to start the bridge on system startup (Linux only, see example in initd-script folder).
 
+### Security
+Landroid Bridge does not feature any authentication or authorization right now. If you're using MQTT to communicate with the bridge, make sure to use strong passwords to authenticate with your MQTT broker. If you're using HTTP/REST, use a proxy server like nginx or HAProxy that handles the authentication/authorization in front of the bridge.
+
 ## Connecting to OpenHAB
 To connect this Landroid Bridge to [OpenHAB](http://www.openhab.org/), add the following configurations to your OpenHAB installation after Landroid Bridge is up and running successfully (see above):
 1. Install the [MQTT Binding](https://docs.openhab.org/addons/bindings/mqtt1/readme.html) in OpenHAB (e.g. using the Paper UI).
@@ -59,6 +62,30 @@ To connect this Landroid Bridge to [OpenHAB](http://www.openhab.org/), add the f
 * Stop mower: POST /landroid-s/stop
 * Set rain delay: PUT /landroid-s/set/rainDelay/x (where 0 <= x <= 300)
 * Set time extension: PUT /landroid-s/set/timeExtension/x (where -100 <= x <= 100)
+* Set work time schedule: PUT /landroid-s/set/schedule/n (where 0 <= n <= 6, 0 is Sunday)
+
+### Examples
+The following examples use the cURL command line util.
+
+Getting the status (current settings):
+```
+curl -X GET http://localhost:3000/landroid-s/status
+```
+
+Starting the mower:
+```
+curl -X POST http://localhost:3000/landroid-s/start
+```
+
+Setting rain delay to 120 minutes:
+```
+curl -X PUT http://localhost:3000/landroid-s/set/rainDelay/120
+```
+
+Setting Saturday's work time to start at 10:30 for 60 minutes with no edge cut:
+```
+curl -X PUT -H "Content-Type: application/json" -d '{"startHour":10,"startMinute":30,"durationMinutes":60,"cutEdge":false}' http://localhost:3000/landroid-s/set/schedule/6
+```
 
 ## MQTT Topics
 ## Published by the bridge (you can listen on these topics with your application)
@@ -83,9 +110,29 @@ To connect this Landroid Bridge to [OpenHAB](http://www.openhab.org/), add the f
 * landroid/status/errorDescription: 
 * landroid/status/statusCode
 * landroid/status/statusDescription
+* landroid/status/schedule/n (where n is the weekday, 0 is Sunday)
 
 ### Published by your application (the bridge will perform updates)
 * landroid/set/start (starts the mower)
 * landroid/set/stop (stops the mower)
 * landroid/set/rainDelay (sets rain delay in minutes, supply delay value as payload)
 * landroid/set/timeExtension (sets time extension in percent, supply percentage value as payload)
+* landroid/set/schedule/n (sets work time for weekday n, where 0 is Sunday – see examples below)
+
+### Examples
+The following examples use the mosquitto_pub command line util of the Mosquitto MQTT broker.
+
+Starting the mower:
+```
+mosquitto_pub -t landroid/set/start
+```
+
+Setting rain delay to 120 minutes:
+```
+mosquitto_pub -t landroid/set/rainDelay -m 120
+```
+
+Setting Saturday's work time to start at 10:30 for 60 minutes with no edge cut:
+```
+mosquitto_pub -t landroid/set/schedule/6 -m '{"startHour":10,"startMinute":30,"durationMinutes":60,"cutEdge":false}'
+```

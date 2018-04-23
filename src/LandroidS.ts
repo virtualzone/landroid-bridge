@@ -46,6 +46,43 @@ export class LandroidS {
         this.sendMessage(null, {rd: rainDelay});
     }
 
+    public setSchedule(weekday: number, val: string|Object): void {
+        if (isNaN(weekday) || weekday < 0 || weekday > 6) {
+            throw Error("Weekday must be >= 0 and <= 6 where 0 is Sunday");
+        }
+        if (!this.latestUpdate || !this.latestUpdate.schedule) {
+            throw Error("Can only set new schedule when current schedule has been retrieved from cloud service");
+        }
+        let timePeriod = this.jsonToObject(val);
+        if (!timePeriod) {
+            throw Error("Value must be a valid JSON string or an object");
+        }
+        let message = this.latestUpdate.schedule.map(entry => this.timePeriodToCloudArray(entry.serialize()));
+        message[weekday] = this.timePeriodToCloudArray(timePeriod);
+        console.log("Setting new schedule with update for weekday %d to %s", weekday, JSON.stringify(message));
+        this.sendMessage(null, {sc: {d: message}});
+    }
+
+    private timePeriodToCloudArray(timePeriod: any): Array<any> {
+        return [
+            ("00" + timePeriod["startHour"]).slice(-2) + ":" + ("00" + timePeriod["startMinute"]).slice(-2),
+            parseInt(timePeriod["durationMinutes"], 10),
+            (timePeriod["cutEdge"] ? 1 : 0)
+        ];
+    }
+
+    private jsonToObject(json: string|Object) {
+        if (typeof(json) === "string") {
+            try {
+                return JSON.parse(json);
+            } catch (e) {
+                return null;
+            }
+        } else {
+            return json;
+        }
+    }
+
     public init(): void {
         if (this.initialized) {
             throw new Error("Already initialized!");
@@ -96,8 +133,16 @@ export class LandroidS {
         let curr = currentDataset.serialize();
         for (let key of Object.keys(curr)) {
             let val = curr[key];
-            if (!prev || prev[key] !== curr[key]) {
-                Mqtt.getInstance().publish("status/" + key, String(val), true);
+            if (!prev || prev[key] !== val) {
+                if (val instanceof Array) {
+                    val.forEach((entry, i) => {
+                        if (!prev || !prev[key] || !prev[key][i] || JSON.stringify(prev[key][i]) !== JSON.stringify(val[i])) {
+                            Mqtt.getInstance().publish("status/" + key + "/" + i, JSON.stringify(val[i]), true);
+                        }
+                    });
+                } else {
+                    Mqtt.getInstance().publish("status/" + key, String(val), true);
+                }
             }
         }
     }
@@ -112,6 +157,9 @@ export class LandroidS {
                 this.setRainDelay(payload);
             } else if (topic === "set/timeExtension") {
                 this.setTimeExtension(payload);
+            } else if (topic.startsWith("set/schedule/")) {
+                let weekday = parseInt(topic.substr("set/schedule/".length), 10);
+                this.setSchedule(weekday, String(payload));
             } else {
                 console.error("Unknown MQTT topic: %s", topic);
             }

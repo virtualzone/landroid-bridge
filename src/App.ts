@@ -35,6 +35,8 @@ export class App extends EventEmitter {
     public start(): void {
         this.setupMqtt();
         this.express.set("trust proxy", true);
+        this.express.use(bodyParser.json());
+        this.express.use(bodyParser.urlencoded({ extended: false }));
         this.setupRoutes();
         LandroidS.getInstance().init();
         this.emit("appStarted");

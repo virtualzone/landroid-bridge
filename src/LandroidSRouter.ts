@@ -10,6 +10,7 @@ class LandroidSRouter extends BaseRouter {
         this.router.post("/stop", this.stopMower.bind(this));
         this.router.put("/set/rainDelay/:value", this.setRainDelay.bind(this));
         this.router.put("/set/timeExtension/:value", this.setTimeExtension.bind(this));
+        this.router.put("/set/schedule/:weekday", this.setSchedule.bind(this));
     }
 
     private status(req: Request, res: Response, next: NextFunction): void {
@@ -45,6 +46,17 @@ class LandroidSRouter extends BaseRouter {
         let value = req.params.value;
         try {
             LandroidS.getInstance().setTimeExtension(value);
+            this.ok(res);
+        } catch (e) {
+            this.badRequest(res, e.message);
+        }
+    }
+
+    private setSchedule(req: Request, res: Response, next: NextFunction): void {
+        let weekday = req.params.weekday;
+        let payload = req.body;
+        try {
+            LandroidS.getInstance().setSchedule(weekday, payload);
             this.ok(res);
         } catch (e) {
             this.badRequest(res, e.message);

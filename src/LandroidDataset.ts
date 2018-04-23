@@ -7,7 +7,7 @@ export class LandroidDataset {
     firmware: string;
     wifiQuality: number;
     active: boolean;
-    rainDelay: boolean;
+    rainDelay: number;
     timeExtension: number;
     serialNumber: string;
     totalTime: number;
@@ -22,6 +22,7 @@ export class LandroidDataset {
     errorDescription: string;
     statusCode: number;
     statusDescription: string;
+    schedule: TimePeriod[];
 
     constructor(readings: any) {
         if (readings) {
@@ -51,7 +52,8 @@ export class LandroidDataset {
             errorCode: this.errorCode,
             errorDescription: this.errorDescription,
             statusCode: this.statusCode,
-            statusDescription: this.statusDescription
+            statusDescription: this.statusDescription,
+            schedule: this.schedule.map(timePeriod => timePeriod.serialize())
         };
     }
 
@@ -59,11 +61,24 @@ export class LandroidDataset {
         if (readings["cfg"]) {
             this.language = readings["cfg"]["lg"];
             this.dateTime = moment(readings["cfg"]["dt"] + " " + readings["cfg"]["tm"], "DD/MM/YYYY HH:mm:ss");
-            this.rainDelay = readings["cfg"]["rd"];
+            this.rainDelay = parseInt(readings["cfg"]["rd"], 10);
             this.serialNumber = readings["cfg"]["sn"];
             if (readings["cfg"]["sc"]) {
                 this.active = (readings["cfg"]["sc"]["m"] ? true : false);
                 this.timeExtension = Number(readings["cfg"]["sc"]["p"]).valueOf();
+                if (readings["cfg"]["sc"]["d"]) {
+                    this.schedule = [];
+                    let entries: any[] = readings["cfg"]["sc"]["d"];
+                    entries.forEach(entry => {
+                        let timePeriod: TimePeriod = new TimePeriod();
+                        let start = String(entry[0]).split(":");
+                        timePeriod.startHour = parseInt(start[0], 10);
+                        timePeriod.startMinute = parseInt(start[1], 10);
+                        timePeriod.durationMinutes = parseInt(entry[1], 10);
+                        timePeriod.cutEdge = (entry[2] ? true : false);
+                        this.schedule.push(timePeriod);
+                    });
+                }
             }
         }
         if (readings["dat"]) {
@@ -125,4 +140,20 @@ export class LandroidDataset {
         14: "Charge error",
         15: "Timeout finding home"
     };
+}
+
+export class TimePeriod {
+    startHour: number;
+    startMinute: number;
+    durationMinutes: number;
+    cutEdge: boolean;
+
+    public serialize(): any {
+        return {
+            startHour: this.startHour,
+            startMinute: this.startMinute,
+            durationMinutes: this.durationMinutes,
+            cutEdge: this.cutEdge
+        };
+    }
 }
