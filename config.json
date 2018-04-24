@@ -11,5 +11,14 @@
         "enable": true,
         "url": "mqtt://username:password@localhost",
         "topic": "landroid"
+    },
+    "scheduler": {
+        "enable": false,
+        "weather": {
+            "provider": "wunderground",
+            "apiKey": "YOUR_API_KEY",
+            "latitude": 50.0982164,
+            "longitude": 8.221404
+        }
     }
 }
