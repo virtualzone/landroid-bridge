@@ -15,7 +15,7 @@ export class Weather {
         return new Promise((resolve, reject) => {
             https.get(url, (res) => {
                 if (!res || res.statusCode !== 200) {
-                    reject();
+                    reject(new Error("Got invalid status code from api.wunderground.com"));
                     return;
                 }
                 let rawData = "";
@@ -25,7 +25,7 @@ export class Weather {
                 res.on("end", () => {
                     let json = JSON.parse(rawData);
                     if (!json || !json.response || !json.hourly_forecast) {
-                        reject();
+                        reject(new Error("Invalid JSON response from api.wunderground.com"));
                         return;
                     }
                     let result = json.hourly_forecast.map(entry => WeatherDataset.fromWunderground(entry));

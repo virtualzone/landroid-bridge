@@ -8,6 +8,7 @@ import LandroidSRouter from './LandroidSRouter';
 import { LandroidS } from './LandroidS';
 import { Mqtt } from './Mqtt';
 import WeatherRouter from './WeatherRouter';
+import SchedulerRouter from './SchedulerRouter';
 
 export class App extends EventEmitter {
     private static readonly INSTANCE: App = new App();
@@ -55,6 +56,7 @@ export class App extends EventEmitter {
         let router: Router = express.Router();
         this.express.use('/', router);
         this.express.use("/landroid-s", LandroidSRouter);
+        this.express.use("/scheduler", SchedulerRouter);
         this.express.use("/weather", WeatherRouter);
     }
 

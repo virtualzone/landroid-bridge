@@ -16,4 +16,3 @@ class WeatherRouter extends BaseRouter {
 }
 
 export default new WeatherRouter().router;
-

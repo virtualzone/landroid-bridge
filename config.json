@@ -19,6 +19,15 @@
             "apiKey": "YOUR_API_KEY",
             "latitude": 50.0982164,
             "longitude": 8.221404
-        }
+        },
+        "earliestStart": 11,
+        "latestStop": 21,
+        "offDays": 2,
+        "squareMeters": 300,
+        "perHour": 50,
+        "mowTime": 75,
+        "chargeTime": 75,
+        "rainDelay": 120,
+        "threshold": 30
     }
 }
