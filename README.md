@@ -9,7 +9,7 @@ Publishes readings from the Worx Landroid S Lawn Mower via HTTP (REST, JSON) and
 
 ### Using Docker
 1. Create a ```config.json``` file (see template in source).
-1. Run the image like this (assuming you want to link it with your MySQL container):
+1. Run the image like this (assuming you want to link it with your MQTT container, such as one based on the [eclipse-mosquitto](https://hub.docker.com/_/eclipse-mosquitto/) image):
     ```
     docker run \
         -p 3000:3000 \
