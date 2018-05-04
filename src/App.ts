@@ -1,5 +1,6 @@
 import * as express from 'express';
 import * as bodyParser from 'body-parser';
+import * as path from 'path';
 import { Server } from "http";
 import { Config } from "./Config";
 import { Router, NextFunction } from 'express-serve-static-core';
@@ -58,6 +59,18 @@ export class App extends EventEmitter {
         this.express.use("/landroid-s", LandroidSRouter);
         this.express.use("/scheduler", SchedulerRouter);
         this.express.use("/weather", WeatherRouter);
+        this.addStaticFilesRoutes();
+    }
+
+    private addStaticFilesRoutes(): void {
+        let router = express.Router();
+        let staticFilesPaths = [
+            path.join(__dirname, "../www")
+        ];
+        staticFilesPaths.forEach(staticFilesPath => {
+            console.log("Adding static files path %s", staticFilesPath);
+            this.express.use(express.static(staticFilesPath));
+        });
     }
 
     private exitOnSignal(): void {

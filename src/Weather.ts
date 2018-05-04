@@ -55,6 +55,14 @@ export class WeatherDataset {
         return dataset;
     }
 
+    public static fromValues(dateTime: moment.Moment, temperature: number, precipitation: number): WeatherDataset {
+        let result: WeatherDataset = new WeatherDataset();
+        result.dateTime = dateTime;
+        result.temperature = temperature;
+        result.precipitation = precipitation;
+        return result;
+    }
+
     public serialize(): any {
         return {
             dateTime: this.dateTime.format("YYYY-MM-DD HH:mm:ss"),
