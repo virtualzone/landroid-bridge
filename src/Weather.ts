@@ -6,6 +6,8 @@ import { Config } from './Config';
 import { App } from './App';
 
 export class Weather {
+    public static USE_FILES: boolean = false;
+
     public static loadCurrent(): Promise<WeatherDataset> {
         let config = Config.getInstance().get("scheduler").weather;
         let url = "https://api.wunderground.com/api/" +
@@ -26,7 +28,7 @@ export class Weather {
             resolve(result);
         };
         return new Promise((resolve, reject) => {
-            if (App.getInstance().devEnvironment) {
+            if (Weather.USE_FILES) {
                 let filePath: string = path.join(process.cwd(), "./test/current.json");
                 let rawData: string = fs.readFileSync(filePath, "utf8");
                 onLoaded(rawData, resolve, reject);
@@ -68,7 +70,7 @@ export class Weather {
             resolve(result);
         };
         return new Promise((resolve, reject) => {
-            if (App.getInstance().devEnvironment) {
+            if (Weather.USE_FILES) {
                 let filePath: string = path.join(process.cwd(), "./test/history.json");
                 let rawData: string = fs.readFileSync(filePath, "utf8");
                 onLoaded(rawData, resolve, reject);
@@ -133,7 +135,7 @@ export class Weather {
             }
         };
         return new Promise((resolve, reject) => {
-            if (App.getInstance().devEnvironment) {
+            if (Weather.USE_FILES) {
                 let filePath: string = path.join(process.cwd(), "./test/forecast.json");
                 let rawData: string = fs.readFileSync(filePath, "utf8");
                 onLoaded(rawData, resolve, reject);

@@ -44,7 +44,11 @@ export class Scheduler {
                 let offDayIdx = this.getOffDayIdx(config, result);
                 offDayIdx.forEach(i => result[i].durationMinutes = 0);
                 // Minimize mow times
-                this.adjustMowTimes(config, result).then(() => resolve(result)).catch(e => reject(e));
+                this.adjustMowTimes(config, result).then(() => {
+                    this.adjustEdgeCut(config, result).then(() => {
+                        resolve(result);
+                    }).catch(e => reject(e));
+                }).catch(e => reject(e));
             }).catch(e => reject(new Error("Could not load weather forecast: " + e)));
         });
     }
@@ -59,6 +63,17 @@ export class Scheduler {
             result[date.format("YYYY-MM-DD")] = item;
         }
         return result;
+    }
+
+    private adjustEdgeCut(config: any, timePeriods: Object): Promise<void> {
+        return new Promise((resolve, reject) => {
+            Object.keys(timePeriods).forEach(key => {
+                let item = timePeriods[key];
+                // TODO Cut edges every config.daysForTotalCut only
+                item.cutEdge = true;
+            });
+            resolve();
+        });
     }
 
     private adjustMowTimes(config: any, timePeriods: Object): Promise<void> {
