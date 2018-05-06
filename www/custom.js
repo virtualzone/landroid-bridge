@@ -5,15 +5,22 @@
         $("#nav-item-schedule > a").click(function() {
             $(".nav-link").removeClass("active");
             $("#nav-item-schedule > a").addClass("active");
+            $(".container-x").hide();
             $("#container-schedule").show();
-            $("#container-readings").hide();
             return false;
         });
         $("#nav-item-readings > a").click(function() {
             $(".nav-link").removeClass("active");
             $("#nav-item-readings > a").addClass("active");
-            $("#container-schedule").hide();
+            $(".container-x").hide();
             $("#container-readings").show();
+            return false;
+        });
+        $("#nav-item-about > a").click(function() {
+            $(".nav-link").removeClass("active");
+            $("#nav-item-about > a").addClass("active");
+            $(".container-x").hide();
+            $("#container-about").show();
             return false;
         });
     }
@@ -73,19 +80,39 @@
     function loadSchedule() {
         createScheduleRows();
         $.get("./scheduler/config", function(config) {
-            for (var j=0; j<=config.earliestStart-1; j++) {
-                var col = $("#container-schedule thead th:nth-child("+(j+2)+")");
-                col.css("color", "#D3D3D3");
-            };
-            for (var j=config.latestStop; j<=23; j++) {
-                var col = $("#container-schedule thead th:nth-child("+(j+2)+")");
-                col.css("color", "#D3D3D3");
-            };
-            loadWeather(config);
-            loadIntelliSchedule(config);
+            if (config.enable) {
+                for (var j=0; j<=config.earliestStart-1; j++) {
+                    var col = $("#container-schedule thead th:nth-child("+(j+2)+")");
+                    col.css("color", "#D3D3D3");
+                };
+                for (var j=config.latestStop; j<=23; j++) {
+                    var col = $("#container-schedule thead th:nth-child("+(j+2)+")");
+                    col.css("color", "#D3D3D3");
+                };
+                loadWeather(config);
+                loadIntelliSchedule(config);
+            } else {
+                $("#container-schedule .table-responsive").hide();
+                $("#scheduler-disabled").show();
+            }
+        });
+    }
+
+    function loadReading() {
+        var container = $('#container-readings');
+        $.get("./landroid-s/status", function(status) {
+            container.clear();
+            Object.keys(status).forEach(key => {
+                var item = $(document.createElement("p"));
+                item.text(key + " = " + status[key]);
+                container.append(item);
+            });
+        }).fail(function() {
+            container.html("<p>Could not load status.</p>");
         });
     }
 
     setupTabs();
     loadSchedule();
+    loadReading();
 }());

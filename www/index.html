@@ -26,46 +26,54 @@
         <ul class="nav nav-tabs">
             <li class="nav-item" id="nav-item-schedule"><a class="nav-link active" href="#">Schedule</a></li>
             <li class="nav-item" id="nav-item-readings"><a class="nav-link" href="#">Readings</a></li>
+            <li class="nav-item" id="nav-item-about"><a class="nav-link" href="#">About</a></li>
         </ul>
         <div id="container-schedule" class="container-x">
+            <p id="scheduler-disabled" style="display:none">The scheduler is disabled in your config.json.</p>
             <div class="table-responsive">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th scope="col">Date</th>
-                        <th scope="col">00</th>
-                        <th scope="col">01</th>
-                        <th scope="col">02</th>
-                        <th scope="col">03</th>
-                        <th scope="col">04</th>
-                        <th scope="col">05</th>
-                        <th scope="col">06</th>
-                        <th scope="col">07</th>
-                        <th scope="col">08</th>
-                        <th scope="col">09</th>
-                        <th scope="col">10</th>
-                        <th scope="col">11</th>
-                        <th scope="col">12</th>
-                        <th scope="col">13</th>
-                        <th scope="col">14</th>
-                        <th scope="col">15</th>
-                        <th scope="col">16</th>
-                        <th scope="col">17</th>
-                        <th scope="col">18</th>
-                        <th scope="col">19</th>
-                        <th scope="col">20</th>
-                        <th scope="col">21</th>
-                        <th scope="col">22</th>
-                        <th scope="col">23</th>
-                    </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Date</th>
+                            <th scope="col">00</th>
+                            <th scope="col">01</th>
+                            <th scope="col">02</th>
+                            <th scope="col">03</th>
+                            <th scope="col">04</th>
+                            <th scope="col">05</th>
+                            <th scope="col">06</th>
+                            <th scope="col">07</th>
+                            <th scope="col">08</th>
+                            <th scope="col">09</th>
+                            <th scope="col">10</th>
+                            <th scope="col">11</th>
+                            <th scope="col">12</th>
+                            <th scope="col">13</th>
+                            <th scope="col">14</th>
+                            <th scope="col">15</th>
+                            <th scope="col">16</th>
+                            <th scope="col">17</th>
+                            <th scope="col">18</th>
+                            <th scope="col">19</th>
+                            <th scope="col">20</th>
+                            <th scope="col">21</th>
+                            <th scope="col">22</th>
+                            <th scope="col">23</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
             </div>
+            <p>The scheduled is applied automatically to your mower once per hour using the latest weather data.</p>
         </div>
         <div id="container-readings" class="container-x" style="display:none">
-            TODO: Readings
+            <p>Loading status...</p>
+        </div>
+        <div id="container-about" class="container-x" style="display:none">
+            <p>&copy; <a href="https://weweave.net" target="_blank">weweave UG (limited liability)</a></p>
+            <p>By using this software, you accept the terms of GPLv3.</p>
+            <p><a href="https://github.com/weweave/landroid-bridge" target="_blank" class="btn btn-primary">Source code on GitHub</a></p>
         </div>
     </div>
     <script src="./jquery-3.3.1.min.js"></script>
