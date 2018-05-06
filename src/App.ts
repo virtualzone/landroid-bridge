@@ -11,6 +11,7 @@ import { Mqtt } from './Mqtt';
 import WeatherRouter from './WeatherRouter';
 import SchedulerRouter from './SchedulerRouter';
 import { Scheduler } from './Scheduler';
+import { ScheduledTasks } from './ScheduledTasks';
 
 export class App extends EventEmitter {
     private static readonly INSTANCE: App = new App();
@@ -44,6 +45,7 @@ export class App extends EventEmitter {
         this.setupRoutes();
         new Scheduler().init().then(() => {
             LandroidS.getInstance().init();
+            ScheduledTasks.init();
             this.emit("appStarted");
             console.log("Server ready");
         }).catch(e => console.error(e));

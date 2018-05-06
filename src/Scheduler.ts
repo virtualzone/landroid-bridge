@@ -5,6 +5,7 @@ import { Config } from "./Config";
 import { Weather, WeatherDataset } from "./Weather";
 import { OPEN_READONLY, Database } from 'sqlite3';
 import { resolve } from 'dns';
+import { LandroidS } from './LandroidS';
 
 export class Scheduler {
     public init(): Promise<void> {
@@ -15,10 +16,13 @@ export class Scheduler {
         return new Promise((resolve, reject) => {
             this.getNext7Days().then(schedule => {
                 let settings = [];
-                Object.keys(schedule).forEach(key => {
+                Object.keys(schedule).sort().forEach((key, i) => {
                     let item = schedule[key];
                     let date = moment(key);
                     settings.push([date, item.durationMinutes]);
+                    if (i <= 7) {
+                        LandroidS.getInstance().setSchedule(date.weekday(), item.serialize());
+                    }
                 });
                 this.persistDurations(settings)
                     .then(() => resolve(schedule))
