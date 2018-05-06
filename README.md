@@ -53,6 +53,7 @@ To enable and configure the scheduler modify your config.json:
 ```
 "scheduler": {
     "enable": false,
+    "cron": false,
     "weather": {
         "provider": "wunderground",
         "apiKey": "YOUR_API_KEY",
@@ -74,7 +75,8 @@ To enable and configure the scheduler modify your config.json:
 ```
 
 The meaning of these settings:
-* enable: true enabled the integrated scheduler
+* enable: true enables the integrated scheduler
+* cron: true enables automatic cron-based scheduling (once per hour) - if false, scheduling must be triggered manually, see below
 * weather.provider: Currently, only ["wunderground"](https://www.wunderground.com/weather/api/d/docs?d=data/history&MR=1) is supported
 weather.apiKey: Your Wunderground API key
 weather.latitude: Your location's latitude
@@ -90,6 +92,13 @@ weather.longitude: Your location's longitude
 * daysForTotalCut: Number of days you allow your mower for completely cutting your lawn
 * rainDelay: Minutes of standby after a rain shower
 * threshold: The minimum chance of rain (percentage) considered as "don't mow"
+
+### Manually triggering the scheduler
+If scheduler.cron is set to false in your config.json, no scheduling is performed automatically. You can trigger scheduling by firing an HTTP POST request to scheduler/apply (i.e. via your home automation system):
+
+```
+curl -X POST http://localhost:3000/scheduler/apply
+```
 
 ## Connecting to OpenHAB
 To connect this Landroid Bridge to [OpenHAB](http://www.openhab.org/), add the following configurations to your OpenHAB installation after Landroid Bridge is up and running successfully (see above):

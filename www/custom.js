@@ -91,6 +91,11 @@
                 };
                 loadWeather(config);
                 loadIntelliSchedule(config);
+                if (config.cron) {
+                    $("#hint-cron-true").show();
+                } else {
+                    $("#hint-cron-false").show();
+                }
             } else {
                 $("#container-schedule .table-responsive").hide();
                 $("#scheduler-disabled").show();
@@ -98,10 +103,10 @@
         });
     }
 
-    function loadReading() {
+    function loadReadings() {
         var container = $('#container-readings');
         $.get("./landroid-s/status", function(status) {
-            container.clear();
+            container.empty();
             Object.keys(status).forEach(key => {
                 var item = $(document.createElement("p"));
                 item.text(key + " = " + status[key]);
@@ -114,5 +119,5 @@
 
     setupTabs();
     loadSchedule();
-    loadReading();
+    loadReadings();
 }());
