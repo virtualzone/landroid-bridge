@@ -5,6 +5,8 @@ Provides an intelligent automatic scheduler, taking the hourly weather forecast 
 
 You can see the current readings and scheduler results on an integrated web interface.
 
+![](./res/screenshot.png)
+
 ## Setup
 ### Prerequisites
 * If you want to use MQTT instead of HTTP, you need to have an MQTT Broker like [Eclipse Mosquitto](http://mosquitto.org/) installed.
