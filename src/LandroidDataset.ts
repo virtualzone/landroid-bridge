@@ -148,6 +148,15 @@ export class TimePeriod {
     durationMinutes: number;
     cutEdge: boolean;
 
+    public clone(): TimePeriod {
+        let result: TimePeriod = new TimePeriod();
+        result.startHour = this.startHour;
+        result.startMinute = this.startMinute;
+        result.durationMinutes = this.durationMinutes;
+        result.cutEdge = this.cutEdge;
+        return result;
+    }
+
     public serialize(): any {
         return {
             startHour: this.startHour,

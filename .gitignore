@@ -9,3 +9,4 @@ package-lock.json
 www/package-lock.json
 .DS_Store
 config.dev.json
+*.db

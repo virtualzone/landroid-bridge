@@ -10,13 +10,14 @@ import { LandroidS } from './LandroidS';
 import { Mqtt } from './Mqtt';
 import WeatherRouter from './WeatherRouter';
 import SchedulerRouter from './SchedulerRouter';
+import { Scheduler } from './Scheduler';
 
 export class App extends EventEmitter {
     private static readonly INSTANCE: App = new App();
     public readonly express: express.Application;
     public server: Server;
     public mqtt: Mqtt;
-    private devEnvironment: boolean = false;
+    public devEnvironment: boolean = false;
 
     constructor() {
         super();
@@ -41,9 +42,11 @@ export class App extends EventEmitter {
         this.express.use(bodyParser.json());
         this.express.use(bodyParser.urlencoded({ extended: false }));
         this.setupRoutes();
-        LandroidS.getInstance().init();
-        this.emit("appStarted");
-        console.log("Server ready");
+        new Scheduler().init().then(() => {
+            LandroidS.getInstance().init();
+            this.emit("appStarted");
+            console.log("Server ready");
+        }).catch(e => console.error(e));
     }
 
     private setupMqtt(): void {

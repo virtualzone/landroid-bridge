@@ -8,7 +8,7 @@ class WeatherRouter extends BaseRouter {
     }
 
     private getHourly10DayForcast(req: Request, res: Response, next: NextFunction): void {
-        Weather.loadHourly10day().then(result => {
+        Weather.loadHourly10day(true).then(result => {
             let serialized = result.map(dataset => dataset.serialize());
             res.status(200).send(serialized);
         }).catch(e => this.internalServerError(res));

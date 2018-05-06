@@ -19,7 +19,7 @@
     }
 
     function createScheduleRows() {
-        for (var i=1; i<=7; i++) {
+        for (var i=0; i<=7; i++) {
             var date = moment().add(i, "days");
             var dateFormatted = date.format("YYYY-MM-DD");
             var row = $(document.createElement("tr"));
@@ -39,24 +39,27 @@
     }
 
     function loadIntelliSchedule() {
+        let now = moment();
         $.get("./scheduler/next7day", function(data) {
-            for (var i=1; i<=7; i++) {
-                var date = moment().add(i, "days");
-                var dateFormatted = date.format("YYYY-MM-DD");
-                var startHour = data[i-1].startHour;
-                var lastHour = startHour + Math.floor(data[i-1].durationMinutes / 60) - 1;
+            Object.keys(data).forEach(date => {
+                var item = data[date];
+                var startHour = item.startHour;
+                var lastHour = startHour + Math.floor(item.durationMinutes / 60) - 1;
                 for (var j=startHour; j<=lastHour; j++) {
-                    var targetCell = $("#scheduler-cell-" + dateFormatted + "-" + j);
+                    var targetCell = $("#scheduler-cell-" + date + "-" + j);
                     targetCell.css("background-color", "orange");
                 }
-            }
+            });
         });
     }
 
-    function loadWeather() {
+    function loadWeather(config) {
         $.get("./weather/hourly10day", function(data) {
             data.forEach(element => {
                 var targetCell = $("#scheduler-cell-" + moment(element.dateTime).format("YYYY-MM-DD-H"));
+                if (element.precipitation >= config.threshold) {
+                    targetCell.css("background-color", "#87CEFA");
+                }
                 var precipitation = $(document.createElement("div"));
                 precipitation.text(element.precipitation + "%");
                 var temp = $(document.createElement("div"));
@@ -67,8 +70,22 @@
         });
     }
 
+    function loadSchedule() {
+        createScheduleRows();
+        $.get("./scheduler/config", function(config) {
+            for (var j=0; j<=config.earliestStart-1; j++) {
+                var col = $("#container-schedule thead th:nth-child("+(j+2)+")");
+                col.css("color", "#D3D3D3");
+            };
+            for (var j=config.latestStop; j<=23; j++) {
+                var col = $("#container-schedule thead th:nth-child("+(j+2)+")");
+                col.css("color", "#D3D3D3");
+            };
+            loadWeather(config);
+            loadIntelliSchedule(config);
+        });
+    }
+
     setupTabs();
-    createScheduleRows();
-    loadWeather();
-    loadIntelliSchedule();
+    loadSchedule();
 }());

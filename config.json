@@ -20,6 +20,7 @@
             "latitude": 50.0982164,
             "longitude": 8.221404
         },
+        "db": "./scheduler.db",
         "earliestStart": 11,
         "latestStop": 21,
         "offDays": 2,
@@ -27,6 +28,7 @@
         "perHour": 50,
         "mowTime": 75,
         "chargeTime": 75,
+        "daysForTotalCut": 2,
         "rainDelay": 120,
         "threshold": 30
     }
