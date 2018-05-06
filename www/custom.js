@@ -32,7 +32,7 @@
             var row = $(document.createElement("tr"));
             var col = $(document.createElement("th"));
             col.attr("scope", "row");
-            col.text(dateFormatted);
+            col.html(dateFormatted + '<div class="cut-edge" style="color:orange;display:none">Cut Edge</div>');
             col.attr("style", "white-space:nowrap");
             row.append(col);
             row.attr("id", "scheduler-row-" + dateFormatted);
@@ -55,6 +55,9 @@
                 for (var j=startHour; j<=lastHour; j++) {
                     var targetCell = $("#scheduler-cell-" + date + "-" + j);
                     targetCell.css("background-color", "orange");
+                }
+                if (item.cutEdge) {
+                    $("#scheduler-row-" + date + " .cut-edge").show();
                 }
             });
         });

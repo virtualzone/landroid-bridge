@@ -53,7 +53,7 @@ export class Scheduler {
         let result: Object = {};
         let now: moment.Moment = moment();
         let offset = (now.hour() >= config.latestStop ? 1 : 0);
-        for (let i = 0 + offset; i <= 7 - offset; i++) {
+        for (let i = 0 + offset; i <= 7; i++) {
             let date: moment.Moment = moment().add(i, "days");
             let item: TimePeriod = this.getTimePeriodForDate(config, forecast, date);
             result[date.format("YYYY-MM-DD")] = item;
