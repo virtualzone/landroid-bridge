@@ -1,5 +1,9 @@
 # Landroid Bridge
-Publishes readings from the Worx Landroid S Lawn Mower via HTTP (REST, JSON) and MQTT.
+Publishes readings from the Worx Landroid S Lawn Mower via HTTP (REST, JSON) and MQTT. Allows for modifying settings via HTTP and MQTT.
+
+Provides an intelligent automatic scheduler, taking the hourly weather forecast and schedules your mower according to the weather forecast, history data and individual mower/garden profile.
+
+You can see the current readings and scheduler results on an integrated web interface.
 
 ## Setup
 ### Prerequisites
@@ -37,6 +41,55 @@ Publishes readings from the Worx Landroid S Lawn Mower via HTTP (REST, JSON) and
 
 ### Security
 Landroid Bridge does not feature any authentication or authorization right now. If you're using MQTT to communicate with the bridge, make sure to use strong passwords to authenticate with your MQTT broker. If you're using HTTP/REST, use a proxy server like nginx or HAProxy that handles the authentication/authorization in front of the bridge.
+
+## Web interface
+You can access the web interface at:
+
+http://localhost:3000
+
+## Configuring the scheduler
+To enable and configure the scheduler modify your config.json:
+
+```
+"scheduler": {
+    "enable": false,
+    "weather": {
+        "provider": "wunderground",
+        "apiKey": "YOUR_API_KEY",
+        "latitude": 50.0982164,
+        "longitude": 8.221404
+    },
+    "db": "./scheduler.db",
+    "earliestStart": 11,
+    "latestStop": 21,
+    "offDays": 2,
+    "squareMeters": 300,
+    "perHour": 50,
+    "mowTime": 75,
+    "chargeTime": 75,
+    "daysForTotalCut": 2,
+    "rainDelay": 120,
+    "threshold": 30
+}
+```
+
+The meaning of these settings:
+* enable: true enabled the integrated scheduler
+* weather.provider: Currently, only ["wunderground"](https://www.wunderground.com/weather/api/d/docs?d=data/history&MR=1) is supported
+weather.apiKey: Your Wunderground API key
+weather.latitude: Your location's latitude
+weather.longitude: Your location's longitude
+* db: Location of the SQLite3 database file (created automatically)
+* earliestStart: The earliest hour of the day the mower will start
+* latestStop: The latest hour of the day the mower will stop
+* offDays: Number of days per week your mower won't mow
+* squareMeters: Square meters of lawn
+* perHour: Square meters your mower will mow per hour
+* mowTime: Minutes your mower will mow before returning to the basis for charging
+* chargeTime: Minutes your mower needs to charge its batteries
+* daysForTotalCut: Number of days you allow your mower for completely cutting your lawn
+* rainDelay: Minutes of standby after a rain shower
+* threshold: The minimum chance of rain (percentage) considered as "don't mow"
 
 ## Connecting to OpenHAB
 To connect this Landroid Bridge to [OpenHAB](http://www.openhab.org/), add the following configurations to your OpenHAB installation after Landroid Bridge is up and running successfully (see above):

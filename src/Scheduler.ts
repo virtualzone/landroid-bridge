@@ -140,7 +140,7 @@ export class Scheduler {
         if (result.durationMinutes < 0) {
             result.durationMinutes = 0;
         }
-        result.cutEdge = false;
+        result.cutEdge = true;
         return result;
     }
 
