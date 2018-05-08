@@ -82,8 +82,8 @@
                 temp.text(element.temperature + "°");
                 targetCell.append(precipitation);
                 targetCell.append(temp);
-                cb();
             });
+            cb();
         });
     }
 
@@ -94,11 +94,11 @@
                 for (var j=0; j<=config.earliestStart-1; j++) {
                     var col = $("#container-schedule thead th:nth-child("+(j+2)+")");
                     col.css("color", "#D3D3D3");
-                };
+                }
                 for (var j=config.latestStop; j<=23; j++) {
                     var col = $("#container-schedule thead th:nth-child("+(j+2)+")");
                     col.css("color", "#D3D3D3");
-                };
+                }
                 loadWeather(config, function() {
                     loadIntelliSchedule(config);
                 });
