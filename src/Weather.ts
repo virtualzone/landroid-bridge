@@ -137,7 +137,10 @@ export class Weather {
                         if (result.length > 0) {
                             firstForecastHour = result[0].dateTime.hour();
                         }
-                        let diffHour = Math.abs(firstForecastHour - lastHistoryHour);
+                        let diffHour = firstForecastHour - lastHistoryHour;
+                        if (diffHour < 0) {
+                            diffHour += 24;
+                        }
                         for (let i = 1; i < diffHour; i++) {
                             let currentConditionsCloned = currentConditions.clone();
                             currentConditionsCloned.dateTime = lastHistoryMoment.clone();
