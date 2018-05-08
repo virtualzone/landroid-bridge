@@ -29,10 +29,16 @@
         for (var i=0; i<=7; i++) {
             var date = moment().add(i, "days");
             var dateFormatted = date.format("YYYY-MM-DD");
+            var label = dateFormatted;
             var row = $(document.createElement("tr"));
             var col = $(document.createElement("th"));
+            if (date.isSame(moment(), "day")) {
+                label = "Today";
+            } else if (date.isSame(moment().add(1, "days"), "day")) {
+                label = "Tomorrow";
+            } 
             col.attr("scope", "row");
-            col.html(dateFormatted + '<div class="cut-edge" style="color:orange;display:none">Cut Edge</div>');
+            col.html(label + '<div class="cut-edge" style="color:orange;display:none">Cut Edge</div>');
             col.attr("style", "white-space:nowrap");
             row.append(col);
             row.attr("id", "scheduler-row-" + dateFormatted);
@@ -63,7 +69,7 @@
         });
     }
 
-    function loadWeather(config) {
+    function loadWeather(config, cb) {
         $.get("./weather/hourly10day", function(data) {
             data.forEach(element => {
                 var targetCell = $("#scheduler-cell-" + moment(element.dateTime).format("YYYY-MM-DD-H"));
@@ -76,6 +82,7 @@
                 temp.text(element.temperature + "°");
                 targetCell.append(precipitation);
                 targetCell.append(temp);
+                cb();
             });
         });
     }
@@ -92,8 +99,9 @@
                     var col = $("#container-schedule thead th:nth-child("+(j+2)+")");
                     col.css("color", "#D3D3D3");
                 };
-                loadWeather(config);
-                loadIntelliSchedule(config);
+                loadWeather(config, function() {
+                    loadIntelliSchedule(config);
+                });
                 if (config.cron) {
                     $("#hint-cron-true").show();
                 } else {

@@ -2,11 +2,13 @@ import * as https from 'https';
 import * as moment from 'moment';
 import * as fs from "fs";
 import * as path from 'path';
+import * as Cache from 'cache';
 import { Config } from './Config';
 import { App } from './App';
 
 export class Weather {
-    public static USE_FILES: boolean = false;
+    public static USE_FILES: boolean = false; // Debugging/offline-mode only
+    private static CACHE = new Cache(60 * 1000 * 5); // 5 minutes
 
     public static loadCurrent(): Promise<WeatherDataset> {
         let config = Config.getInstance().get("scheduler").weather;
@@ -33,15 +35,23 @@ export class Weather {
                 let rawData: string = fs.readFileSync(filePath, "utf8");
                 onLoaded(rawData, resolve, reject);
             } else {
-                https.get(url, (res) => {
-                    if (!res || res.statusCode !== 200) {
-                        reject(new Error("Got invalid status code from api.wunderground.com"));
-                        return;
-                    }
-                    let rawData = "";
-                    res.on("data", (chunk) => rawData += chunk);
-                    res.on("end", () => onLoaded(rawData, resolve, reject));
-                });
+                let rawData = Weather.CACHE.get("current");
+                if (rawData) {
+                    onLoaded(rawData, resolve, reject);
+                } else {
+                    https.get(url, (res) => {
+                        if (!res || res.statusCode !== 200) {
+                            reject(new Error("Got invalid status code from api.wunderground.com"));
+                            return;
+                        }
+                        rawData = "";
+                        res.on("data", (chunk) => rawData += chunk);
+                        res.on("end", () => {
+                            Weather.CACHE.put("current", rawData);
+                            onLoaded(rawData, resolve, reject);
+                        });
+                    });
+                }
             }
         });
     }
@@ -75,15 +85,23 @@ export class Weather {
                 let rawData: string = fs.readFileSync(filePath, "utf8");
                 onLoaded(rawData, resolve, reject);
             } else {
-                https.get(url, (res) => {
-                    if (!res || res.statusCode !== 200) {
-                        reject(new Error("Got invalid status code from api.wunderground.com"));
-                        return;
-                    }
-                    let rawData = "";
-                    res.on("data", (chunk) => rawData += chunk);
-                    res.on("end", () => onLoaded(rawData, resolve, reject));
-                });
+                let rawData = Weather.CACHE.get("history");
+                if (rawData) {
+                    onLoaded(rawData, resolve, reject);
+                } else {
+                    https.get(url, (res) => {
+                        if (!res || res.statusCode !== 200) {
+                            reject(new Error("Got invalid status code from api.wunderground.com"));
+                            return;
+                        }
+                        rawData = "";
+                        res.on("data", (chunk) => rawData += chunk);
+                        res.on("end", () => {
+                            Weather.CACHE.put("history", rawData);
+                            onLoaded(rawData, resolve, reject);
+                        });
+                    });
+                }
             }
         });
     }
@@ -140,15 +158,23 @@ export class Weather {
                 let rawData: string = fs.readFileSync(filePath, "utf8");
                 onLoaded(rawData, resolve, reject);
             } else {
-                https.get(url, (res) => {
-                    if (!res || res.statusCode !== 200) {
-                        reject(new Error("Got invalid status code from api.wunderground.com"));
-                        return;
-                    }
-                    let rawData = "";
-                    res.on("data", (chunk) => rawData += chunk);
-                    res.on("end", () => onLoaded(rawData, resolve, reject));
-                });
+                let rawData = Weather.CACHE.get("forecast");
+                if (rawData) {
+                    onLoaded(rawData, resolve, reject);
+                } else {
+                    https.get(url, (res) => {
+                        if (!res || res.statusCode !== 200) {
+                            reject(new Error("Got invalid status code from api.wunderground.com"));
+                            return;
+                        }
+                        rawData = "";
+                        res.on("data", (chunk) => rawData += chunk);
+                        res.on("end", () => {
+                            Weather.CACHE.put("forecast", rawData);
+                            onLoaded(rawData, resolve, reject);
+                        });
+                    });
+                }
             }
         });
     }
