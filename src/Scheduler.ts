@@ -94,11 +94,15 @@ export class Scheduler {
                             targetToday = item.durationMinutes;
                         }
                         let diff = item.durationMinutes - targetToday;
-                        item.startHour += Math.floor(diff / 60);
+                        if (!config.startEarly) {
+                            item.startHour += Math.floor(diff / 60);
+                        }
                         item.durationMinutes = targetToday;
                     } else if (item.durationMinutes > targetMowTimePerDay) {
                         let diff = item.durationMinutes - targetMowTimePerDay;
-                        item.startHour += Math.floor(diff / 60);
+                        if (!config.startEarly) {
+                            item.startHour += Math.floor(diff / 60);
+                        }
                         item.durationMinutes = targetMowTimePerDay;
                     }
                 });
