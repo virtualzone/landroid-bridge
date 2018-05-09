@@ -116,12 +116,31 @@
 
     function loadReadings() {
         var container = $('#container-readings');
+        var weekdays = [
+            "Sunday",
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday"
+        ];
         $.get("./landroid-s/status", function(status) {
             container.empty();
             Object.keys(status).forEach(key => {
                 var item = $(document.createElement("p"));
-                item.text(key + " = " + status[key]);
                 container.append(item);
+                if (key === "schedule") {
+                    item.text(key + " = ");
+                    status[key].forEach((scheduleItem, i) => {
+                        var subItem = $(document.createElement("p"));
+                        subItem.text(weekdays[i] + " = " + JSON.stringify(scheduleItem));
+                        subItem.css("padding-left", "20px");
+                        container.append(subItem);
+                    });
+                } else {
+                    item.text(key + " = " + status[key]);
+                }
             });
         }).fail(function() {
             container.html("<p>Could not load status.</p>");
