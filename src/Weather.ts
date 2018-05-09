@@ -39,12 +39,14 @@ export class Weather {
                 if (rawData) {
                     onLoaded(rawData, resolve, reject);
                 } else {
+                    console.log("Loading from %s", url);
                     https.get(url, (res) => {
                         if (!res || res.statusCode !== 200) {
                             reject(new Error("Got invalid status code from api.wunderground.com"));
                             return;
                         }
                         rawData = "";
+                        res.on("error", e => console.error("HTTP error: %s", e));
                         res.on("data", (chunk) => rawData += chunk);
                         res.on("end", () => {
                             Weather.CACHE.put("current", rawData);
@@ -89,12 +91,14 @@ export class Weather {
                 if (rawData) {
                     onLoaded(rawData, resolve, reject);
                 } else {
+                    console.log("Loading from %s", url);
                     https.get(url, (res) => {
                         if (!res || res.statusCode !== 200) {
                             reject(new Error("Got invalid status code from api.wunderground.com"));
                             return;
                         }
                         rawData = "";
+                        res.on("error", e => console.error("HTTP error: %s", e));
                         res.on("data", (chunk) => rawData += chunk);
                         res.on("end", () => {
                             Weather.CACHE.put("history", rawData);
@@ -165,12 +169,14 @@ export class Weather {
                 if (rawData) {
                     onLoaded(rawData, resolve, reject);
                 } else {
+                    console.log("Loading from %s", url);
                     https.get(url, (res) => {
                         if (!res || res.statusCode !== 200) {
                             reject(new Error("Got invalid status code from api.wunderground.com"));
                             return;
                         }
                         rawData = "";
+                        res.on("error", e => console.error("HTTP error: %s", e));
                         res.on("data", (chunk) => rawData += chunk);
                         res.on("end", () => {
                             Weather.CACHE.put("forecast", rawData);
