@@ -44,10 +44,11 @@ export class App extends EventEmitter {
         this.express.use(bodyParser.urlencoded({ extended: false }));
         this.setupRoutes();
         new Scheduler().init().then(() => {
-            LandroidS.getInstance().init();
-            ScheduledTasks.init();
-            this.emit("appStarted");
-            console.log("Server ready");
+            LandroidS.getInstance().init().then(() => {
+                ScheduledTasks.init();
+                this.emit("appStarted");
+                console.log("Server ready");
+            }).catch(e => console.error(e));
         }).catch(e => console.error(e));
     }
 

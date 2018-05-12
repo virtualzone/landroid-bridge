@@ -16,7 +16,7 @@ export class Scheduler {
                 resolve();
                 return;
             }
-            return this.createDb();
+            this.createDb().then(() => resolve()).catch(e => reject(e));
         });
     }
 
