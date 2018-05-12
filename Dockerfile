@@ -9,6 +9,7 @@ RUN apk update && \
 COPY *.js /usr/src/app/
 COPY *.json /usr/src/app/
 COPY src/ /usr/src/app/src/
+COPY www/ /usr/src/app/www/
 
 RUN npm install && \
     npm run build-prod && \

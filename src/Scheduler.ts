@@ -9,7 +9,15 @@ import { LandroidS } from './LandroidS';
 
 export class Scheduler {
     public init(): Promise<void> {
-        return this.createDb();
+        let config = Config.getInstance().get("scheduler");
+        return new Promise((resolve, reject) => {
+            if (!config || !config.enable) {
+                console.log("Skipping scheduler initialization (not enabled)");
+                resolve();
+                return;
+            }
+            return this.createDb();
+        });
     }
 
     public applySchedule(): Promise<Object> {
@@ -199,6 +207,7 @@ export class Scheduler {
         return new Promise((resolve, reject) => {
             let config = Config.getInstance().get("scheduler");
             let filePath: string = path.join(process.cwd(), config.db);
+            console.log("Creating SQLite database at %s", filePath);
             let ddl = "CREATE TABLE IF NOT EXISTS schedule (" +
                 "date TEXT PRIMARY KEY, " +
                 "minutes INT " +
