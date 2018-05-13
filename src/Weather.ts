@@ -7,7 +7,7 @@ import { Config } from './Config';
 import { App } from './App';
 
 export class Weather {
-    public static USE_FILES: boolean = true; // Debugging/offline-mode only
+    public static USE_FILES: boolean = false; // Debugging/offline-mode only
     private static CACHE = new Cache(60 * 1000 * 5); // 5 minutes
 
     public static loadCurrent(): Promise<WeatherDataset> {
