@@ -7,7 +7,7 @@ import { Config } from './Config';
 import { App } from './App';
 
 export class Weather {
-    public static USE_FILES: boolean = false; // Debugging/offline-mode only
+    public static USE_FILES: boolean = true; // Debugging/offline-mode only
     private static CACHE = new Cache(60 * 1000 * 5); // 5 minutes
 
     public static loadCurrent(): Promise<WeatherDataset> {
@@ -21,7 +21,6 @@ export class Weather {
             ".json";
         let onLoaded = function(rawData: string, resolve, reject) {
             let json = JSON.parse(rawData);
-            //console.log(JSON.stringify(json) + "\n\n");
             if (!json || !json.response || !json.current_observation) {
                 reject(new Error("Invalid JSON response from api.wunderground.com"));
                 return;
@@ -73,7 +72,6 @@ export class Weather {
             ".json";
         let onLoaded = function(rawData: string, resolve, reject) {
             let json = JSON.parse(rawData);
-            //console.log(JSON.stringify(json) + "\n\n");
             if (!json || !json.response || !json.history || !json.history.observations) {
                 reject(new Error("Invalid JSON response from api.wunderground.com"));
                 return;
@@ -121,7 +119,6 @@ export class Weather {
             ".json";
         let onLoaded = function(rawData: string, resolve, reject) {
             let json = JSON.parse(rawData);
-            //console.log(JSON.stringify(json) + "\n\n");
             if (!json || !json.response || !json.hourly_forecast) {
                 reject(new Error("Invalid JSON response from api.wunderground.com"));
                 return;
@@ -151,7 +148,22 @@ export class Weather {
                             currentConditionsCloned.dateTime.add(i, "hours");
                             finalResult.push(currentConditionsCloned);
                         }
+                        // If last historic entry is same hour as current conditions, use current conditions
+                        if (finalResult.length > 0) {
+                            if (finalResult[finalResult.length - 1].dateTime.isSame(currentConditions.dateTime, "hour")) {
+                                finalResult[finalResult.length - 1] = currentConditions;
+                            }
+                        }
+                        // If first forecast entry is same hour as current conditions, use current conditions
+                        if (result.length > 0) {
+                            if (result[0].dateTime.isSame(currentConditions.dateTime, "hour")) {
+                                result[0] = currentConditions;
+                            }
+                        }
+                        // Build final array
                         finalResult = finalResult.concat(result);
+                        // Remove duplicate hour calues
+                        Weather.removeDuplicateHourValues(finalResult);
                         resolve(finalResult);
                     }).catch(e => reject(e));
                 }).catch(e => reject(e));
@@ -187,6 +199,17 @@ export class Weather {
             }
         });
     }
+
+    private static removeDuplicateHourValues(arr: WeatherDataset[]): void {
+        for (let i = 0; i < arr.length; i++) {
+            let curr = arr[i];
+            for (let j = arr.length - 1; j >= 0; j--) {
+                if (i !== j && curr.dateTime.isSame(arr[j].dateTime, "hour")) {
+                    arr.splice(j, 1);
+                }
+            }
+        }
+    }
 }
 
 export class WeatherDataset {
@@ -196,14 +219,7 @@ export class WeatherDataset {
 
     public static fromWundergroundCurrent(data): WeatherDataset {
         let dataset: WeatherDataset = new WeatherDataset();
-        let now: moment.Moment = moment().hour(0).minute(0).second(0);
-        dataset.dateTime = moment()
-            .year(now.year())
-            .month(now.month())
-            .date(now.date())
-            .hour(now.hour())
-            .minute(now.minute())
-            .second(0);
+        dataset.dateTime = moment.unix(data.observation_epoch);
         dataset.temperature = parseInt(data.temp_c, 10);
         dataset.precipitation = (data.precip_1hr_metric.trim() !== "0" ? 100 : 0);
         return dataset;
