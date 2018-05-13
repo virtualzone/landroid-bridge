@@ -75,10 +75,31 @@ export class Scheduler {
 
     private adjustEdgeCut(config: any, timePeriods: Object): Promise<void> {
         return new Promise((resolve, reject) => {
+            let missingCut: boolean = false;
             Object.keys(timePeriods).forEach(key => {
                 let item = timePeriods[key];
+                let date = moment(key);
+                if (date.dayOfYear() % config.daysForTotalCut === 0) {
+                    if (item.durationMinutes === 0) {
+                        missingCut = true;
+                        item.cutEdge = false;
+                    } else {
+                        missingCut = false;
+                        item.cutEdge = true;
+                    }
+                } else {
+                    if (missingCut) {
+                        if (item.durationMinutes > 0) {
+                            missingCut = false;
+                            item.cutEdge = true;
+                        } else {
+                            item.cutEdge = false;
+                        }
+                    } else {
+                        item.cutEdge = false;
+                    }
+                }
                 // TODO Cut edges every config.daysForTotalCut only
-                item.cutEdge = true;
             });
             resolve();
         });
