@@ -1,6 +1,7 @@
 import { CronJob } from "cron";
 import { Config } from "./Config";
 import { Scheduler } from "./Scheduler";
+import { Weather } from "./Weather";
 
 export class ScheduledTasks {
     private static SCHEDULED: boolean = false;
@@ -12,8 +13,10 @@ export class ScheduledTasks {
         console.log("Initializing scheduled tasks...");
         ScheduledTasks.SCHEDULED = true;
         try {
-            // Run cron every hour at *:15:00
+            // Run every hour at *:15:00
             new CronJob("0 15 * * * *", ScheduledTasks.applySchedule).start();
+            // Run every five minutes
+            new CronJob("30 */1 * * * *", ScheduledTasks.fetchWeatherData, undefined, undefined, undefined, undefined, true).start();
         } catch (e) {
             console.error(e);
         }
@@ -28,5 +31,19 @@ export class ScheduledTasks {
             await new Scheduler().applySchedule();
         }
         console.log("Finished ScheduledTasks.applySchedule.");
+    }
+
+    private static async fetchWeatherData(): Promise<void> {
+        let error: boolean = true;
+        for (let i = 1; i <= 5 && error; i++) {
+            try {
+                console.log("Refreshing weather to cache (try #%d)...", i);
+                await Weather.loadHourly10day(true, true);
+                console.log("Successfully refreshed weather cache");
+                error = false;
+            } catch (e) {
+                error = true;
+            }
+        }
     }
 }

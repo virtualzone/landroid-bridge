@@ -10,7 +10,7 @@ export class Weather {
     public static USE_FILES: boolean = false; // Debugging/offline-mode only
     private static CACHE = new Cache(60 * 1000 * 5); // 5 minutes
 
-    public static loadCurrent(): Promise<WeatherDataset> {
+    public static loadCurrent(forceCacheRenewal?: boolean): Promise<WeatherDataset> {
         let config = Config.getInstance().get("scheduler").weather;
         let url = "https://api.wunderground.com/api/" +
             config.apiKey +
@@ -35,7 +35,7 @@ export class Weather {
                 onLoaded(rawData, resolve, reject);
             } else {
                 let rawData = Weather.CACHE.get("current");
-                if (rawData) {
+                if (rawData && !forceCacheRenewal) {
                     onLoaded(rawData, resolve, reject);
                 } else {
                     console.log("Loading from %s", url);
@@ -57,7 +57,7 @@ export class Weather {
         });
     }
 
-    public static loadHistory(dayOffset?: number): Promise<WeatherDataset[]> {
+    public static loadHistory(dayOffset?: number, forceCacheRenewal?: boolean): Promise<WeatherDataset[]> {
         let config = Config.getInstance().get("scheduler").weather;
         let now: moment.Moment = moment().hour(0).minute(0).second(0);
         if (dayOffset) {
@@ -86,7 +86,7 @@ export class Weather {
                 onLoaded(rawData, resolve, reject);
             } else {
                 let rawData = Weather.CACHE.get("history");
-                if (rawData) {
+                if (rawData && !forceCacheRenewal) {
                     onLoaded(rawData, resolve, reject);
                 } else {
                     console.log("Loading from %s", url);
@@ -108,7 +108,7 @@ export class Weather {
         });
     }
 
-    public static loadHourly10day(includeTodayHistory?: boolean): Promise<WeatherDataset[]> {
+    public static loadHourly10day(includeTodayHistory?: boolean, forceCacheRenewal?: boolean): Promise<WeatherDataset[]> {
         let config = Config.getInstance().get("scheduler").weather;
         let url = "https://api.wunderground.com/api/" +
             config.apiKey +
@@ -123,10 +123,14 @@ export class Weather {
                 reject(new Error("Invalid JSON response from api.wunderground.com"));
                 return;
             }
+            if (json.hourly_forecast.length < 9 * 24) {
+                reject(new Error("Too few entries in hourly forecast"));
+                return;
+            }
             let result = json.hourly_forecast.map(entry => WeatherDataset.fromWundergroundForecast(entry));
             if (includeTodayHistory) {
-                Weather.loadHistory().then(history => {
-                    Weather.loadCurrent().then(currentConditions => {
+                Weather.loadHistory(undefined, forceCacheRenewal).then(history => {
+                    Weather.loadCurrent(forceCacheRenewal).then(currentConditions => {
                         let finalResult = history;
                         let lastHistoryHour: number = 0;
                         let lastHistoryMoment: moment.Moment = moment();
@@ -178,7 +182,7 @@ export class Weather {
                 onLoaded(rawData, resolve, reject);
             } else {
                 let rawData = Weather.CACHE.get("forecast");
-                if (rawData) {
+                if (rawData && !forceCacheRenewal) {
                     onLoaded(rawData, resolve, reject);
                 } else {
                     console.log("Loading from %s", url);
