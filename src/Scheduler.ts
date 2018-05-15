@@ -9,7 +9,15 @@ import { LandroidS } from './LandroidS';
 
 export class Scheduler {
     public init(): Promise<void> {
-        return this.createDb();
+        let config = Config.getInstance().get("scheduler");
+        return new Promise((resolve, reject) => {
+            if (!config || !config.enable) {
+                console.log("Skipping scheduler initialization (not enabled)");
+                resolve();
+                return;
+            }
+            this.createDb().then(() => resolve()).catch(e => reject(e));
+        });
     }
 
     public applySchedule(): Promise<Object> {
@@ -67,10 +75,31 @@ export class Scheduler {
 
     private adjustEdgeCut(config: any, timePeriods: Object): Promise<void> {
         return new Promise((resolve, reject) => {
+            let missingCut: boolean = false;
             Object.keys(timePeriods).forEach(key => {
                 let item = timePeriods[key];
+                let date = moment(key);
+                if (date.dayOfYear() % config.daysForTotalCut === 0) {
+                    if (item.durationMinutes === 0) {
+                        missingCut = true;
+                        item.cutEdge = false;
+                    } else {
+                        missingCut = false;
+                        item.cutEdge = true;
+                    }
+                } else {
+                    if (missingCut) {
+                        if (item.durationMinutes > 0) {
+                            missingCut = false;
+                            item.cutEdge = true;
+                        } else {
+                            item.cutEdge = false;
+                        }
+                    } else {
+                        item.cutEdge = false;
+                    }
+                }
                 // TODO Cut edges every config.daysForTotalCut only
-                item.cutEdge = true;
             });
             resolve();
         });
@@ -78,44 +107,36 @@ export class Scheduler {
 
     private adjustMowTimes(config: any, timePeriods: Object): Promise<void> {
         return new Promise((resolve, reject) => {
-            //let totalMowTime = this.getTotalMowTime(timePeriods);
             let workMinutesTotalCut = this.getWorkMinutesTotalCut(config);
             let targetMowTimePerDay = workMinutesTotalCut / config.daysForTotalCut;
-            let soonest = Object.keys(timePeriods).sort()[0];
-            this.getPersistedDurationsSinceYesterday(config.daysForTotalCut - 1).then(pastTotalRollingMowTime => {
-                Object.keys(timePeriods).forEach(key => {
-                    let item = timePeriods[key];
-                    if (key === soonest) {
-                        let targetToday = workMinutesTotalCut - pastTotalRollingMowTime;
-                        if (targetToday < 0) {
-                            targetToday = 0;
-                        }
-                        if (targetToday > item.durationMinutes) {
-                            targetToday = item.durationMinutes;
-                        }
-                        let diff = item.durationMinutes - targetToday;
-                        item.startHour += Math.floor(diff / 60);
-                        item.durationMinutes = targetToday;
-                    } else if (item.durationMinutes > targetMowTimePerDay) {
-                        let diff = item.durationMinutes - targetMowTimePerDay;
-                        item.startHour += Math.floor(diff / 60);
-                        item.durationMinutes = targetMowTimePerDay;
+            let sortedDates = Object.keys(timePeriods).sort();
+            let processItem = function(i) {
+                if (i >= sortedDates.length) {
+                    resolve();
+                    return;
+                }
+                let key = sortedDates[i];
+                let item = timePeriods[key];
+                this.getDurationsSince(moment(key).subtract(1, "days"), config.daysForTotalCut - 1, timePeriods)
+                .then(pastTotalRollingMowTime => {
+                    let targetToday = Math.max(workMinutesTotalCut - pastTotalRollingMowTime, targetMowTimePerDay);
+                    if (targetToday < 0) {
+                        targetToday = 0;
                     }
-                });
-                resolve();
-            }).catch(e => reject(e));
+                    if (targetToday > item.durationMinutes) {
+                        targetToday = item.durationMinutes;
+                    }
+                    let diff = item.durationMinutes - targetToday;
+                    if (!config.startEarly) {
+                        item.startHour += Math.floor(diff / 60);
+                    }
+                    item.durationMinutes = targetToday;
+                   processItem.bind(this)(i + 1);
+                }).catch(e => reject(e));
+            };
+            processItem.bind(this)(0);
         });
     }
-
-    /*
-    private getTotalMowTime(timePeriods: Object): number {
-        let result = 0;
-        Object.keys(timePeriods).forEach(key => {
-            result += timePeriods[key].durationMinutes;
-        });
-        return result;
-    }
-    */
 
     private getWorkMinutesTotalCut(config: any): number {
         let result = 0;
@@ -195,6 +216,7 @@ export class Scheduler {
         return new Promise((resolve, reject) => {
             let config = Config.getInstance().get("scheduler");
             let filePath: string = path.join(process.cwd(), config.db);
+            console.log("Creating SQLite database at %s", filePath);
             let ddl = "CREATE TABLE IF NOT EXISTS schedule (" +
                 "date TEXT PRIMARY KEY, " +
                 "minutes INT " +
@@ -254,14 +276,48 @@ export class Scheduler {
         });
     }
 
+    private getDurationsSince(startDate: moment.Moment, numDaysBackwards: number, timePeriods: Object): Promise<number> {
+        return new Promise((resolve, reject) => {
+            let result: number = 0;
+            let lastFoundDate = null;
+            for (let i = 0; i < numDaysBackwards; i++) {
+                let date = startDate.clone().subtract(i, "days");
+                let formatted = date.format("YYYY-MM-DD");
+                if (formatted in timePeriods) {
+                    result += timePeriods[formatted].durationMinutes;
+                    lastFoundDate = date;
+                    numDaysBackwards--;
+                }
+            }
+            if (numDaysBackwards > 0) {
+                if (lastFoundDate === null) {
+                    lastFoundDate = startDate;
+                } else {
+                    lastFoundDate.subtract(1, "days");
+                }
+                this.getPersistedDurationsSince(lastFoundDate, numDaysBackwards)
+                    .then(val => {
+                        result += val;
+                        resolve(result);
+                    });
+            } else {
+                resolve(result);
+            }
+        });
+    }
+
     private getPersistedDurationsSinceYesterday(numDays: number): Promise<number> {
+        return this.getPersistedDurationsSince(moment().subtract(1, "days"), numDays);
+    }
+
+    private getPersistedDurationsSince(startDate: moment.Moment, numDaysBackwards: number): Promise<number> {
         return new Promise((resolve, reject) => {
             let config = Config.getInstance().get("scheduler");
             let filePath: string = path.join(process.cwd(), config.db);
             let db: Database = new Database(filePath, OPEN_READONLY, () => {
                 let dates = [];
-                for (let i = 1; i <= numDays; i++) {
-                    let date = moment().subtract(i, "days");
+                for (let i = 0; i < numDaysBackwards; i++) {
+                    let date = startDate.clone().subtract(i, "days");
                     dates.push(date.format("YYYY-MM-DD"));
                 }
                 db.all("SELECT * FROM schedule WHERE date IN (?)", dates, (e, rows) => {

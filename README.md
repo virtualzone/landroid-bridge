@@ -65,6 +65,7 @@ To enable and configure the scheduler modify your config.json:
     "db": "./scheduler.db",
     "earliestStart": 11,
     "latestStop": 21,
+    "startEarly": false,
     "offDays": 2,
     "squareMeters": 300,
     "perHour": 50,
@@ -86,6 +87,7 @@ weather.longitude: Your location's longitude
 * db: Location of the SQLite3 database file (created automatically)
 * earliestStart: The earliest hour of the day the mower will start
 * latestStop: The latest hour of the day the mower will stop
+* startEarly: true schedules for the earliest start possible, whereas false schedules for the latest start possible
 * offDays: Number of days per week your mower won't mow
 * squareMeters: Square meters of lawn
 * perHour: Square meters your mower will mow per hour

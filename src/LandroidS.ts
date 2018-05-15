@@ -6,9 +6,11 @@ import { App } from "./App";
 
 export class LandroidS {
     private static INSTANCE: LandroidS = new LandroidS();
+    private static INIT_TIMEOUT: number = 60;
     private initialized: boolean = false;
     private landroidCloud: LandroidCloud;
     private latestUpdate: LandroidDataset;
+    private firstCloudMessageCallback: Function = null;
 
     constructor() {
         if (LandroidS.INSTANCE) {
@@ -83,11 +85,7 @@ export class LandroidS {
         }
     }
 
-    public init(): void {
-        if (this.initialized) {
-            throw new Error("Already initialized!");
-        }
-        this.initialized = true;
+    public init(): Promise<void> {
         let adapter = {
             config: Config.getInstance().get("landroid-s"),
             log: {
@@ -103,9 +101,37 @@ export class LandroidS {
                 warn: []
             }
         };
-        this.landroidCloud = new LandroidCloud(adapter);
-        this.landroidCloud.init(this.updateListener.bind(this));
-        Mqtt.getInstance().on("mqttMessage", this.onMqttMessage.bind(this));
+        let doInit = function() {
+            this.landroidCloud = new LandroidCloud(adapter);
+            this.landroidCloud.init(this.updateListener.bind(this));
+        };
+        return new Promise((resolve, reject) => {
+            if (this.initialized) {
+                reject(new Error("Already initialized!"));
+            }
+            this.initialized = true;
+            console.log("Initializing Landroid Cloud Service...");
+            Mqtt.getInstance().on("mqttMessage", this.onMqttMessage.bind(this));
+            let retryInterval;
+            let onFirstCloudUpdate = function() {
+                console.log("First cloud update received, finishing initialization");
+                clearInterval(retryInterval);
+                resolve();
+            };
+            let tryCount = 0;
+            let retryInit = function() {
+                tryCount++;
+                if (tryCount > 1) {
+                    console.log("Could not finish initialization, retrying...");
+                    this.landroidCloud.updateListener = null;
+                    delete this.landroidCloud;
+                }
+                this.firstCloudMessageCallback = onFirstCloudUpdate;
+                doInit.bind(this)();
+            };
+            retryInterval = setInterval(retryInit.bind(this), LandroidS.INIT_TIMEOUT * 1000);
+            retryInit.bind(this)();
+        });
     }
 
     private sendMessage(cmd?: number, params?: Object): void {
@@ -121,11 +147,15 @@ export class LandroidS {
         this.landroidCloud.sendMessage(outMsg);
     }
 
-    private updateListener(status: any) {
+    private updateListener(status: any): void {
         console.log("Incoming Landroid Cloud update: %s", JSON.stringify(status));
         let dataset: LandroidDataset = new LandroidDataset(status);
         this.publishMqtt(this.latestUpdate, dataset);
         this.latestUpdate = dataset;
+        if (this.firstCloudMessageCallback) {
+            this.firstCloudMessageCallback();
+            this.firstCloudMessageCallback = null;
+        }
     }
 
     private publishMqtt(previousDataset: LandroidDataset, currentDataset: LandroidDataset): void {

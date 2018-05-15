@@ -24,6 +24,7 @@
         "db": "./scheduler.db",
         "earliestStart": 11,
         "latestStop": 21,
+        "startEarly": false,
         "offDays": 2,
         "squareMeters": 300,
         "perHour": 50,
