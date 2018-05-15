@@ -13,10 +13,15 @@ export class ScheduledTasks {
         console.log("Initializing scheduled tasks...");
         ScheduledTasks.SCHEDULED = true;
         try {
-            // Run every hour at *:15:00
-            new CronJob("0 15 * * * *", ScheduledTasks.applySchedule).start();
-            // Run every five minutes
-            new CronJob("30 */1 * * * *", ScheduledTasks.fetchWeatherData, undefined, undefined, undefined, undefined, true).start();
+            let config = Config.getInstance().get("scheduler");
+            if (config && config.enable) {
+                // Run every five minutes
+                new CronJob("30 */1 * * * *", ScheduledTasks.fetchWeatherData, undefined, undefined, undefined, undefined, true).start();
+                if (config.cron) {
+                    // Run every hour at *:15:00
+                    new CronJob("0 15 * * * *", ScheduledTasks.applySchedule).start();
+                }
+            }
         } catch (e) {
             console.error(e);
         }
@@ -24,12 +29,7 @@ export class ScheduledTasks {
 
     private static async applySchedule(): Promise<void> {
         console.log("Running ScheduledTasks.applySchedule...");
-        let config = Config.getInstance().get("scheduler");
-        if (!config || !config.enable || !config.cron) {
-            console.log("Skipping, scheduler is not enabled");
-        } else {
-            await new Scheduler().applySchedule();
-        }
+        await new Scheduler().applySchedule();
         console.log("Finished ScheduledTasks.applySchedule.");
     }
 
