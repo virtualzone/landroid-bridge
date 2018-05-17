@@ -12,8 +12,7 @@ COPY src/ /usr/src/app/src/
 COPY www/ /usr/src/app/www/
 
 RUN npm install && \
-    npm run build-prod && \
-    npm install --save https://github.com/MeisterTR/ioBroker.landroid-s.git
+    npm run build-prod
 
 EXPOSE 3000
 CMD [ "node", "dist/server.js" ]

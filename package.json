@@ -9,7 +9,7 @@
     "start": "node dist/server.js",
     "dev": "npm run clean && npm run grunt && NODE_ENV=dev node dist/server.js",
     "clean": "rm -rf dist/",
-    "build-prod": "npm run clean && npm run grunt && npm prune --production"
+    "build-prod": "npm run clean && npm run grunt && npm prune --production && npm install --save https://github.com/MeisterTR/ioBroker.landroid-s.git"
   },
   "author": "weweave UG <mail@weweave.net>",
   "license": "GPL-3.0",
