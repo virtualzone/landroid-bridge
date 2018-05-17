@@ -25,6 +25,8 @@ You can see the current readings and scheduler results on an integrated web inte
         weweave/landroid-bridge
     ```
 
+There is also a pre-built arm32v7 image for Raspberry Pi: ```weweave/landroid-bridge:arm32v7```
+
 ### Building from source
 1. Make sure you have [Node.js](https://nodejs.org) installed (tested with Node.js v8).
 1. Check out the source code and build it:
