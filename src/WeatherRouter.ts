@@ -1,6 +1,6 @@
 import { BaseRouter } from "./BaseRouter";
 import { Request, Response, NextFunction } from "express";
-import { Weather } from "./Weather";
+import { WeatherFactory } from "./WeatherFactory";
 
 class WeatherRouter extends BaseRouter {
     protected init(): void {
@@ -8,7 +8,7 @@ class WeatherRouter extends BaseRouter {
     }
 
     private getHourly10DayForcast(req: Request, res: Response, next: NextFunction): void {
-        Weather.loadHourly10day(true).then(result => {
+        WeatherFactory.getProvider().loadHourly10day(true).then(result => {
             let serialized = result.map(dataset => dataset.serialize());
             res.status(200).send(serialized);
         }).catch(e => this.internalServerError(res));

@@ -5,12 +5,10 @@ import * as path from 'path';
 import * as Cache from 'cache';
 import { Config } from './Config';
 import { App } from './App';
+import { WeatherProvider, WeatherDataset } from './WeatherProvider';
 
-export class Weather {
-    public static USE_FILES: boolean = false; // Debugging/offline-mode only
-    private static CACHE = new Cache(60 * 1000 * 5); // 5 minutes
-
-    public static loadCurrent(forceCacheRenewal?: boolean): Promise<WeatherDataset> {
+export class WeatherWunderground extends WeatherProvider {
+    public loadCurrent(forceCacheRenewal?: boolean): Promise<WeatherDataset> {
         let config = Config.getInstance().get("scheduler").weather;
         let url = "https://api.wunderground.com/api/" +
             config.apiKey +
@@ -25,16 +23,16 @@ export class Weather {
                 reject(new Error("Invalid JSON response from api.wunderground.com"));
                 return;
             }
-            let result = WeatherDataset.fromWundergroundCurrent(json.current_observation);
+            let result = WundergroundWeatherDataset.fromWundergroundCurrent(json.current_observation);
             resolve(result);
         };
         return new Promise((resolve, reject) => {
-            if (Weather.USE_FILES) {
+            if (WeatherProvider.USE_FILES) {
                 let filePath: string = path.join(process.cwd(), "./test/current.json");
                 let rawData: string = fs.readFileSync(filePath, "utf8");
                 onLoaded(rawData, resolve, reject);
             } else {
-                let rawData = Weather.CACHE.get("current");
+                let rawData = WeatherProvider.CACHE.get("current");
                 if (rawData && !forceCacheRenewal) {
                     onLoaded(rawData, resolve, reject);
                 } else {
@@ -48,7 +46,7 @@ export class Weather {
                         res.on("error", e => console.error("HTTP error: %s", e));
                         res.on("data", (chunk) => rawData += chunk);
                         res.on("end", () => {
-                            Weather.CACHE.put("current", rawData);
+                            WeatherProvider.CACHE.put("current", rawData);
                             onLoaded(rawData, resolve, reject);
                         });
                     });
@@ -57,7 +55,7 @@ export class Weather {
         });
     }
 
-    public static loadHistory(dayOffset?: number, forceCacheRenewal?: boolean): Promise<WeatherDataset[]> {
+    public loadHistory(dayOffset?: number, forceCacheRenewal?: boolean): Promise<WeatherDataset[]> {
         let config = Config.getInstance().get("scheduler").weather;
         let now: moment.Moment = moment().hour(0).minute(0).second(0);
         if (dayOffset) {
@@ -76,16 +74,16 @@ export class Weather {
                 reject(new Error("Invalid JSON response from api.wunderground.com"));
                 return;
             }
-            let result = json.history.observations.map(entry => WeatherDataset.fromWundergroundHistory(entry));
+            let result = json.history.observations.map(entry => WundergroundWeatherDataset.fromWundergroundHistory(entry));
             resolve(result);
         };
         return new Promise((resolve, reject) => {
-            if (Weather.USE_FILES) {
+            if (WeatherProvider.USE_FILES) {
                 let filePath: string = path.join(process.cwd(), "./test/history.json");
                 let rawData: string = fs.readFileSync(filePath, "utf8");
                 onLoaded(rawData, resolve, reject);
             } else {
-                let rawData = Weather.CACHE.get("history");
+                let rawData = WeatherProvider.CACHE.get("history");
                 if (rawData && !forceCacheRenewal) {
                     onLoaded(rawData, resolve, reject);
                 } else {
@@ -99,7 +97,7 @@ export class Weather {
                         res.on("error", e => console.error("HTTP error: %s", e));
                         res.on("data", (chunk) => rawData += chunk);
                         res.on("end", () => {
-                            Weather.CACHE.put("history", rawData);
+                            WeatherProvider.CACHE.put("history", rawData);
                             onLoaded(rawData, resolve, reject);
                         });
                     });
@@ -108,7 +106,7 @@ export class Weather {
         });
     }
 
-    public static loadHourly10day(includeTodayHistory?: boolean, forceCacheRenewal?: boolean): Promise<WeatherDataset[]> {
+    public loadHourly10day(includeTodayHistory?: boolean, forceCacheRenewal?: boolean): Promise<WeatherDataset[]> {
         let config = Config.getInstance().get("scheduler").weather;
         let url = "https://api.wunderground.com/api/" +
             config.apiKey +
@@ -127,10 +125,10 @@ export class Weather {
                 reject(new Error("Too few entries in hourly forecast"));
                 return;
             }
-            let result = json.hourly_forecast.map(entry => WeatherDataset.fromWundergroundForecast(entry));
+            let result = json.hourly_forecast.map(entry => WundergroundWeatherDataset.fromWundergroundForecast(entry));
             if (includeTodayHistory) {
-                Weather.loadHistory(undefined, forceCacheRenewal).then(history => {
-                    Weather.loadCurrent(forceCacheRenewal).then(currentConditions => {
+                this.loadHistory(undefined, forceCacheRenewal).then(history => {
+                    this.loadCurrent(forceCacheRenewal).then(currentConditions => {
                         let finalResult = history;
                         let lastHistoryHour: number = 0;
                         let lastHistoryMoment: moment.Moment = moment();
@@ -167,7 +165,7 @@ export class Weather {
                         // Build final array
                         finalResult = finalResult.concat(result);
                         // Remove duplicate hour calues
-                        Weather.removeDuplicateHourValues(finalResult);
+                        this.removeDuplicateHourValues(finalResult);
                         resolve(finalResult);
                     }).catch(e => reject(e));
                 }).catch(e => reject(e));
@@ -176,12 +174,12 @@ export class Weather {
             }
         };
         return new Promise((resolve, reject) => {
-            if (Weather.USE_FILES) {
+            if (WeatherProvider.USE_FILES) {
                 let filePath: string = path.join(process.cwd(), "./test/forecast.json");
                 let rawData: string = fs.readFileSync(filePath, "utf8");
                 onLoaded(rawData, resolve, reject);
             } else {
-                let rawData = Weather.CACHE.get("forecast");
+                let rawData = WeatherProvider.CACHE.get("forecast");
                 if (rawData && !forceCacheRenewal) {
                     onLoaded(rawData, resolve, reject);
                 } else {
@@ -195,7 +193,7 @@ export class Weather {
                         res.on("error", e => console.error("HTTP error: %s", e));
                         res.on("data", (chunk) => rawData += chunk);
                         res.on("end", () => {
-                            Weather.CACHE.put("forecast", rawData);
+                            WeatherProvider.CACHE.put("forecast", rawData);
                             onLoaded(rawData, resolve, reject);
                         });
                     });
@@ -203,24 +201,9 @@ export class Weather {
             }
         });
     }
-
-    private static removeDuplicateHourValues(arr: WeatherDataset[]): void {
-        for (let i = 0; i < arr.length; i++) {
-            let curr = arr[i];
-            for (let j = arr.length - 1; j >= 0; j--) {
-                if (i !== j && curr.dateTime.isSame(arr[j].dateTime, "hour")) {
-                    arr.splice(j, 1);
-                }
-            }
-        }
-    }
 }
 
-export class WeatherDataset {
-    dateTime: moment.Moment;
-    temperature: number;
-    precipitation: number;
-
+export class WundergroundWeatherDataset extends WeatherDataset {
     public static fromWundergroundCurrent(data): WeatherDataset {
         let dataset: WeatherDataset = new WeatherDataset();
         dataset.dateTime = moment.unix(data.observation_epoch);
@@ -255,29 +238,5 @@ export class WeatherDataset {
         dataset.temperature = parseInt(data.temp.metric, 10);
         dataset.precipitation = parseInt(data.pop, 10);
         return dataset;
-    }
-
-    public static fromValues(dateTime: moment.Moment, temperature: number, precipitation: number): WeatherDataset {
-        let result: WeatherDataset = new WeatherDataset();
-        result.dateTime = dateTime;
-        result.temperature = temperature;
-        result.precipitation = precipitation;
-        return result;
-    }
-
-    public clone(): WeatherDataset {
-        let result: WeatherDataset = new WeatherDataset();
-        result.dateTime = this.dateTime.clone();
-        result.temperature = this.temperature;
-        result.precipitation = this.precipitation;
-        return result;
-    }
-
-    public serialize(): any {
-        return {
-            dateTime: this.dateTime.format("YYYY-MM-DD HH:mm:ss"),
-            temperature: this.temperature,
-            precipitation: this.precipitation
-        };
     }
 }

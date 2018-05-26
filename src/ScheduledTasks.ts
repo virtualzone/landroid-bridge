@@ -1,7 +1,7 @@
 import { CronJob } from "cron";
 import { Config } from "./Config";
 import { Scheduler } from "./Scheduler";
-import { Weather } from "./Weather";
+import { WeatherFactory } from "./WeatherFactory";
 
 export class ScheduledTasks {
     private static SCHEDULED: boolean = false;
@@ -38,7 +38,7 @@ export class ScheduledTasks {
         for (let i = 1; i <= 5 && error; i++) {
             try {
                 console.log("Refreshing weather to cache (try #%d)...", i);
-                await Weather.loadHourly10day(true, true);
+                await WeatherFactory.getProvider().loadHourly10day(true, true);
                 console.log("Successfully refreshed weather cache");
                 error = false;
             } catch (e) {

@@ -2,10 +2,10 @@ import * as moment from 'moment';
 import * as path from 'path';
 import { TimePeriod } from "./LandroidDataset";
 import { Config } from "./Config";
-import { Weather, WeatherDataset } from "./Weather";
+import { WeatherProvider, WeatherDataset } from "./WeatherProvider";
 import { OPEN_READONLY, Database } from 'sqlite3';
-import { resolve } from 'dns';
 import { LandroidS } from './LandroidS';
+import { WeatherFactory } from './WeatherFactory';
 
 export class Scheduler {
     public init(): Promise<void> {
@@ -46,7 +46,7 @@ export class Scheduler {
                 reject(new Error("Scheduler is not enabled in config.json"));
                 return;
             }
-            Weather.loadHourly10day(true).then(forecast => {
+            WeatherFactory.getProvider().loadHourly10day(true).then(forecast => {
                 let result: Object = this.getTimePeriods(config, forecast);
                 // Remove off days
                 let offDayIdx = this.getOffDayIdx(config, result);
