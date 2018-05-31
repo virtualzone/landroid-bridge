@@ -34,7 +34,7 @@ There is also a pre-built arm32v7 image for Raspberry Pi: ```weweave/landroid-br
     git clone https://github.com/weweave/landroid-bridge.git
     cd landroid-bridge
     npm install
-    npm run build-prod
+    npm run grunt
     ```
 1. Update ```config.json``` to match your environment.
 1. Run the server:
