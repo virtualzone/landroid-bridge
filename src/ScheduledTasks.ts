@@ -15,8 +15,8 @@ export class ScheduledTasks {
         try {
             let config = Config.getInstance().get("scheduler");
             if (config && config.enable) {
-                // Run every five minutes
-                new CronJob("30 */1 * * * *", ScheduledTasks.fetchWeatherData, undefined, undefined, undefined, undefined, true).start();
+                // Run every hour at *:10:00
+                new CronJob("30 10 * * * *", ScheduledTasks.fetchWeatherData, undefined, undefined, undefined, undefined, true).start();
                 if (config.cron) {
                     // Run every hour at *:15:00
                     new CronJob("0 15 * * * *", ScheduledTasks.applySchedule).start();

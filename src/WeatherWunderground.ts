@@ -2,7 +2,6 @@ import * as https from 'https';
 import * as moment from 'moment';
 import * as fs from "fs";
 import * as path from 'path';
-import * as Cache from 'cache';
 import { Config } from './Config';
 import { App } from './App';
 import { WeatherProvider, WeatherDataset } from './WeatherProvider';
@@ -194,7 +193,7 @@ export class WeatherWunderground extends WeatherProvider {
                         res.on("data", (chunk) => rawData += chunk);
                         res.on("end", () => {
                             WeatherProvider.CACHE.put("forecast", rawData);
-                            onLoaded(rawData, resolve, reject);
+                            onLoaded.call(this, rawData, resolve, reject);
                         });
                     });
                 }

@@ -8,7 +8,7 @@ import { App } from './App';
 
 export abstract class WeatherProvider {
     public static USE_FILES: boolean = false; // Debugging/offline-mode only
-    protected static CACHE = new Cache(60 * 1000 * 5); // 5 minutes
+    protected static CACHE = new Cache(60 * 1000 * 70); // 70 minutes
 
     public abstract loadCurrent(forceCacheRenewal?: boolean): Promise<WeatherDataset>;
 
