@@ -182,7 +182,8 @@ curl -X PUT -H "Content-Type: application/json" -d '{"startHour":10,"startMinute
 
 ### Published by your application (the bridge will perform updates)
 * landroid/set/start (starts the mower)
-* landroid/set/stop (stops the mower)
+* landroid/set/stop (stops the mower and sends it home)
+* landroid/set/mow (payload "start" starts the mower, "stop" stops the mower)
 * landroid/set/rainDelay (sets rain delay in minutes, supply delay value as payload)
 * landroid/set/timeExtension (sets time extension in percent, supply percentage value as payload)
 * landroid/set/schedule/n (sets work time for weekday n, where 0 is Sunday – see examples below)

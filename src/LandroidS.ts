@@ -183,6 +183,14 @@ export class LandroidS {
                 this.startMower();
             } else if (topic === "set/stop") {
                 this.stopMower();
+            } else if (topic === "set/mow") {
+                if (payload === "start") {
+                    this.startMower();
+                } else if (payload === "stop") {
+                    this.stopMower();
+                } else {
+                    console.error("Invalid MQTT payload for topic %s", topic);
+                }
             } else if (topic === "set/rainDelay") {
                 this.setRainDelay(payload);
             } else if (topic === "set/timeExtension") {
