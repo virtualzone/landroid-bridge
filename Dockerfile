@@ -1,18 +1,21 @@
 FROM node:8-alpine
 
-RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 
 RUN apk update && \
     apk add git
 
-COPY *.js /usr/src/app/
-COPY *.json /usr/src/app/
-COPY src/ /usr/src/app/src/
-COPY www/ /usr/src/app/www/
+# Add package.json
+COPY package*.json .
 
-RUN npm install && \
-    npm run build-prod
+# Restore node modules
+RUN npm install
+
+# Add everything else not excluded by .dockerignore
+COPY . .
+
+# Build it
+RUN npm run build-prod
 
 EXPOSE 3000
 CMD [ "node", "dist/server.js" ]
