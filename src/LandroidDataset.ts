@@ -119,7 +119,9 @@ export class LandroidDataset {
         11: "Debug",
         12: "Remote control",
         30: "Going home",
-        32: "Cutting edge"
+        32: "Cutting edge",
+        33: "Searching area",
+        34: "Pause"
     };
 
     public static ERROR_CODES = {
