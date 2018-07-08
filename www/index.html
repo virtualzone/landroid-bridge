@@ -4,6 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <link rel="stylesheet" href="./bootstrap.min.css" />
+    <link rel="stylesheet" href="./circle.css" />
     <title>Landroid Bridge</title>
     <link rel="shortcut icon" href="./favicon.ico" />
     <style>
@@ -25,11 +26,27 @@
     <div class="container">
         <h1>Landroid Bridge</h1>
         <ul class="nav nav-tabs">
-            <li class="nav-item" id="nav-item-schedule"><a class="nav-link active" href="#">Schedule</a></li>
+            <li class="nav-item" id="nav-item-dashboard"><a class="nav-link active" href="#">Dashboard</a></li>
+            <li class="nav-item" id="nav-item-schedule"><a class="nav-link" href="#">Schedule</a></li>
             <li class="nav-item" id="nav-item-readings"><a class="nav-link" href="#">Readings</a></li>
             <li class="nav-item" id="nav-item-about"><a class="nav-link" href="#">About</a></li>
         </ul>
-        <div id="container-schedule" class="container-x">
+        <div id="container-dashboard" class="container-x">
+            <div class="c100 p0 green">
+                <span>0%</span>
+                <div class="slice">
+                    <div class="bar"></div>
+                    <div class="fill"></div>
+                </div>
+            </div>
+            <div class="dashboard-text">
+                <h3 id="dashboard-status">Loading...</h3>
+                <p class="small" id="dashboard-last-update"></p>
+                <p id="dashboard-button-start" style="display:none"><a href="#" class="btn btn-primary">Start mowing</a></p>
+                <p id="dashboard-button-stop" style="display:none"><a href="#" class="btn btn-primary">Go home</a></p>
+            </div>
+        </div>
+        <div id="container-schedule" class="container-x" style="display:none">
             <p id="scheduler-disabled" style="display:none">The scheduler is disabled in your config.json.</p>
             <div class="table-responsive">
                 <table class="table">
