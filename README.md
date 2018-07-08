@@ -82,10 +82,10 @@ To enable and configure the scheduler modify your config.json:
 The meaning of these settings:
 * enable: true enables the integrated scheduler
 * cron: true enables automatic cron-based scheduling (once per hour) - if false, scheduling must be triggered manually, see below
-* weather.provider: Currently, only ["wunderground"](https://www.wunderground.com/weather/api/d/docs?d=data/history&MR=1) is supported
-weather.apiKey: Your Wunderground API key
-weather.latitude: Your location's latitude
-weather.longitude: Your location's longitude
+* weather.provider: One of ["wunderground"](https://www.wunderground.com/weather/api/d/docs?d=data/history&MR=1) or ["darksky"](https://darksky.net/dev/)
+* weather.apiKey: Your Wunderground/Dark Sky API key
+* weather.latitude: Your location's latitude
+* weather.longitude: Your location's longitude
 * db: Location of the SQLite3 database file (created automatically)
 * earliestStart: The earliest hour of the day the mower will start
 * latestStop: The latest hour of the day the mower will stop
