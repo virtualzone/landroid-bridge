@@ -11,7 +11,10 @@ class WeatherRouter extends BaseRouter {
         WeatherFactory.getProvider().loadHourly10day(true).then(result => {
             let serialized = result.map(dataset => dataset.serialize());
             res.status(200).send(serialized);
-        }).catch(e => this.internalServerError(res));
+        }).catch(e => {
+            console.error(e);
+            this.internalServerError(res);
+        });
     }
 }
 
