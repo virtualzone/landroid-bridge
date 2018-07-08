@@ -2,9 +2,6 @@ FROM node:8-alpine
 
 WORKDIR /usr/src/app
 
-RUN apk update && \
-    apk add git
-
 # Add package.json
 COPY package*.json .
 
