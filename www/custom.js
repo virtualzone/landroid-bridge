@@ -2,6 +2,13 @@
     "use strict";
 
     function setupTabs() {
+        $("#nav-item-dashboard > a").click(function() {
+            $(".nav-link").removeClass("active");
+            $("#nav-item-dashboard > a").addClass("active");
+            $(".container-x").hide();
+            $("#container-dashboard").show();
+            return false;
+        });
         $("#nav-item-schedule > a").click(function() {
             $(".nav-link").removeClass("active");
             $("#nav-item-schedule > a").addClass("active");
@@ -142,12 +149,42 @@
                     item.text(key + " = " + status[key]);
                 }
             });
+            var todaySchedule = status["schedule"][moment().day()];
+            var todayStart = moment().hours(todaySchedule.startHour).minutes(todaySchedule.startMinute);
+            var todayDone = Math.round((moment().unix()/60 - todayStart.unix()/60) / todaySchedule.durationMinutes * 100);
+            if (todayDone < 0) {
+                todayDone = 0;
+            }
+            if (todayDone > 100) {
+                todayDone = 100;
+            }
+            $(".c100 > span").text(todayDone + "%");
+            $(".c100").removeClass("p0").addClass("p" + todayDone);
+            $("#dashboard-status").text(status["statusDescription"]);
+            $("#dashboard-last-update").text("Last update: " + status["dateTime"]);
+            if (status["statusCode"] == 7) {
+                $("#dashboard-button-stop").show();
+            } else if (status["statusCode"] == 1) {
+                $("#dashboard-button-start").show();
+            }
         }).fail(function() {
             container.html("<p>Could not load status.</p>");
+        });
+    }
+
+    function setupDashboard() {
+        $("#dashboard-button-stop").click(function() {
+            $.post("./landroid-s/stop");
+            return false;
+        });
+        $("#dashboard-button-start").click(function() {
+            $.post("./landroid-s/start");
+            return false;
         });
     }
 
     setupTabs();
     loadSchedule();
     loadReadings();
+    setupDashboard();
 }());
