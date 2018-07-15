@@ -2,17 +2,24 @@ import * as moment from 'moment';
 import * as path from 'path';
 import { TimePeriod } from "./LandroidDataset";
 import { Config } from "./Config";
-import { WeatherProvider, WeatherDataset } from "./WeatherProvider";
+import { WeatherDataset } from "./WeatherProvider";
 import { OPEN_READONLY, Database } from 'sqlite3';
 import { LandroidS } from './LandroidS';
 import { WeatherFactory } from './WeatherFactory';
+import { getLogger, Logger } from "log4js";
 
 export class Scheduler {
+    private log: Logger;
+
+    constructor() {
+        this.log = getLogger(this.constructor.name);
+    }
+
     public init(): Promise<void> {
         let config = Config.getInstance().get("scheduler");
         return new Promise((resolve, reject) => {
             if (!config || !config.enable) {
-                console.log("Skipping scheduler initialization (not enabled)");
+                this.log.info("Skipping scheduler initialization (not enabled)");
                 resolve();
                 return;
             }
@@ -99,7 +106,6 @@ export class Scheduler {
                         item.cutEdge = false;
                     }
                 }
-                // TODO Cut edges every config.daysForTotalCut only
             });
             resolve();
         });
@@ -216,7 +222,7 @@ export class Scheduler {
         return new Promise((resolve, reject) => {
             let config = Config.getInstance().get("scheduler");
             let filePath: string = path.join(process.cwd(), config.db);
-            console.log("Creating SQLite database at %s", filePath);
+            this.log.info("Creating SQLite database at %s", filePath);
             let ddl = "CREATE TABLE IF NOT EXISTS schedule (" +
                 "date TEXT PRIMARY KEY, " +
                 "minutes INT " +

@@ -12,6 +12,7 @@
         "url": "mqtt://username:password@localhost",
         "topic": "landroid"
     },
+    "logLevel": "info",
     "scheduler": {
         "enable": false,
         "cron": false,

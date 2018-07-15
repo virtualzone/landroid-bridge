@@ -1,14 +1,17 @@
 import * as fs from "fs";
 import * as path from 'path';
+import { getLogger, Logger } from "log4js";
 
 export class Config {
     private static INSTANCE: Config = new Config();
     private config: Object;
+    private log: Logger;
 
     constructor() {
         if (Config.INSTANCE) {
             throw new Error("Call Config.getInstance() instead!");
         }
+        this.log = getLogger(this.constructor.name);
         let filePath: string = path.join(process.cwd(), "./config.json");
         this.loadConfig(filePath);
     }
@@ -23,7 +26,7 @@ export class Config {
     }
 
     private loadConfig(filePath: string): void {
-        console.log("Loading config from " + filePath);
+        this.log.info("Loading config from " + filePath);
         let buffer: string = fs.readFileSync(filePath, "utf8");
         try {
             this.config = JSON.parse(buffer);

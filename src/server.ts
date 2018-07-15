@@ -2,14 +2,25 @@ import * as http from 'http';
 import * as debug from 'debug';
 import { App } from './App';
 import { Config } from './Config';
+import { getLogger, Logger, configure as configureLog4js } from "log4js";
 
-console.log("Starting Landroid Bridge...");
+configureLog4js({
+    appenders: {
+        out: { type: 'stdout' }
+    },
+    categories: {
+        default: { appenders: ["out"], level: "debug" }
+    }
+});
+const log: Logger = getLogger("server.ts");
+
+log.info("Starting Landroid Bridge...");
 
 debug('ts-express:server');
 
 const port = normalizePort(process.env.PORT || Config.getInstance().get("http").port || 3000);
 
-console.log("Setting port to %d...", port);
+log.info("Setting port to %d...", port);
 App.getInstance().express.set('port', port);
 App.getInstance().start();
 
@@ -37,11 +48,11 @@ function onError(error: NodeJS.ErrnoException): void {
     let bind = (typeof port === 'string') ? 'Pipe ' + port : 'Port ' + port;
     switch(error.code) {
         case 'EACCES':
-            console.error(`${bind} requires elevated privileges`);
+            log.error(`${bind} requires elevated privileges`);
             process.exit(1);
             break;
         case 'EADDRINUSE':
-            console.error(`${bind} is already in use`);
+            log.error(`${bind} is already in use`);
             process.exit(1);
             break;
         default:

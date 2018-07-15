@@ -2,8 +2,8 @@ import * as mocha from 'mocha';
 import * as chai from 'chai';
 import * as moment from 'moment';
 import { Scheduler } from '../src/Scheduler';
-import { WeatherDataset } from '../src/Weather';
 import { Moment } from 'moment';
+import { WeatherDataset } from '../src/WeatherProvider';
 
 const expect = chai.expect;
 
@@ -26,7 +26,8 @@ describe("Scheduler", () => {
                 WeatherDataset.fromValues(start.clone().add(11, "hours"), 21, 0),
                 WeatherDataset.fromValues(start.clone().add(12, "hours"), 21, 0)
             ];
-            let result = Scheduler.getLongestSequenceBelowPrecipitationThreshold(forecast, 40);
+            let scheduler: Scheduler = new Scheduler();
+            let result = scheduler.getLongestSequenceBelowPrecipitationThreshold(forecast, 40);
             expect(result).to.be.not.undefined;
             expect(result).to.be.not.null;
             expect(result.start.isSame("2018-03-31 09:00:00")).to.be.true;
@@ -50,7 +51,8 @@ describe("Scheduler", () => {
                 WeatherDataset.fromValues(start.clone().add(11, "hours"), 21, 50),
                 WeatherDataset.fromValues(start.clone().add(12, "hours"), 21, 50)
             ];
-            let result = Scheduler.getLongestSequenceBelowPrecipitationThreshold(forecast, 40);
+            let scheduler: Scheduler = new Scheduler();
+            let result = scheduler.getLongestSequenceBelowPrecipitationThreshold(forecast, 40);
             expect(result).to.be.not.undefined;
             expect(result).to.be.not.null;
             expect(result.start.isSame("2018-03-31 12:00:00")).to.be.true;
@@ -74,7 +76,8 @@ describe("Scheduler", () => {
                 WeatherDataset.fromValues(start.clone().add(11, "hours"), 21, 0),
                 WeatherDataset.fromValues(start.clone().add(12, "hours"), 21, 100)
             ];
-            let result = Scheduler.getLongestSequenceBelowPrecipitationThreshold(forecast, 40);
+            let scheduler: Scheduler = new Scheduler();
+            let result = scheduler.getLongestSequenceBelowPrecipitationThreshold(forecast, 40);
             expect(result).to.be.not.undefined;
             expect(result).to.be.not.null;
             expect(result.start.isSame("2018-03-31 16:00:00")).to.be.true;

@@ -12,6 +12,7 @@ import WeatherRouter from './WeatherRouter';
 import SchedulerRouter from './SchedulerRouter';
 import { Scheduler } from './Scheduler';
 import { ScheduledTasks } from './ScheduledTasks';
+import { getLogger, Logger, configure as configureLog4js } from "log4js";
 
 export class App extends EventEmitter {
     private static readonly INSTANCE: App = new App();
@@ -19,17 +20,30 @@ export class App extends EventEmitter {
     public server: Server;
     public mqtt: Mqtt;
     public devEnvironment: boolean = false;
+    private log: Logger;
 
     constructor() {
         super();
         if (App.INSTANCE) {
             throw new Error("Call App.getInstance() instead!");
         }
+        this.log = getLogger(this.constructor.name);
         this.devEnvironment = (process.env.NODE_ENV && process.env.NODE_ENV.toLowerCase() === "dev");
-        console.log("Dev mode = %s", this.devEnvironment);
+        this.log.info("Dev mode = %s", this.devEnvironment);
         if (this.devEnvironment) {
             Config.getInstance().loadDevConfig();
         }
+        configureLog4js({
+            appenders: {
+                out: { type: 'stdout' }
+            },
+            categories: {
+                default: {
+                    appenders: ["out"],
+                    level: (Config.getInstance().get("logLevel") ? Config.getInstance().get("logLevel") : "info")
+                }
+            }
+        });
         process.on("SIGINT", this.exitOnSignal.bind(this));
         process.on("SIGTERM", this.exitOnSignal.bind(this));
         process.on("uncaughtException", this.handleUnknownException.bind(this));
@@ -47,9 +61,9 @@ export class App extends EventEmitter {
             LandroidS.getInstance().init().then(() => {
                 ScheduledTasks.init();
                 this.emit("appStarted");
-                console.log("Server ready");
-            }).catch(e => console.error(e));
-        }).catch(e => console.error(e));
+                this.log.info("Server ready");
+            }).catch(e => this.log.error(e));
+        }).catch(e => this.log.error(e));
     }
 
     private setupMqtt(): void {
@@ -74,26 +88,26 @@ export class App extends EventEmitter {
             path.join(__dirname, "../www")
         ];
         staticFilesPaths.forEach(staticFilesPath => {
-            console.log("Adding static files path %s", staticFilesPath);
+            this.log.info("Adding static files path %s", staticFilesPath);
             this.express.use(express.static(staticFilesPath));
         });
     }
 
     private exitOnSignal(): void {
-        console.log("Received exit signal...");
+        this.log.info("Received exit signal...");
         if (this.server) {
-            console.log("Closing http listener...");
+            this.log.info("Closing http listener...");
             this.server.close();
         }
         process.exit(0);
     }
 
     private handleUnknownException(e: Error): void {
-        console.error("Unhandled exception: %s", e);
+        this.log.error("Unhandled exception: %s", e);
     }
 
     private handleUnknownRejection(reason: Error, p: Promise<any>): void {
-        console.error("Unhandled rejection: %s", reason);
+        this.log.error("Unhandled rejection: %s", reason);
     }
 
     public static getInstance(): App {

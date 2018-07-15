@@ -2,7 +2,8 @@ import * as LandroidCloud from "iobroker.landroid-s/lib/landroid-cloud-2";
 import { Config } from "./Config";
 import { LandroidDataset } from "./LandroidDataset";
 import { Mqtt } from "./Mqtt";
-import { App } from "./App";
+import { IoBrokerAdapter } from "./IoBrokerAdapter";
+import { getLogger, Logger } from "log4js";
 
 export class LandroidS {
     private static INSTANCE: LandroidS = new LandroidS();
@@ -11,11 +12,13 @@ export class LandroidS {
     private landroidCloud: LandroidCloud;
     private latestUpdate: LandroidDataset;
     private firstCloudMessageCallback: Function = null;
+    private log: Logger;
 
     constructor() {
         if (LandroidS.INSTANCE) {
             throw new Error("Call LandroidS.getInstance() instead!");
         }
+        this.log = getLogger(this.constructor.name);
     }
 
     public getLatestUpdate(): LandroidDataset {
@@ -35,7 +38,7 @@ export class LandroidS {
             throw Error("Time extension must be >= -100 and <= 100");
         }
         timeExtension = Number(timeExtension);
-        console.log("Setting time extension to %d", timeExtension);
+        this.log.info("Setting time extension to %d", timeExtension);
         this.sendMessage(null, {sc: {p: timeExtension}});
     }
 
@@ -44,7 +47,7 @@ export class LandroidS {
             throw Error("Rain delay must be >= 0 and <= 300");
         }
         rainDelay = Number(rainDelay);
-        console.log("Setting rain delay to %d", rainDelay);
+        this.log.info("Setting rain delay to %d", rainDelay);
         this.sendMessage(null, {rd: rainDelay});
     }
 
@@ -61,7 +64,7 @@ export class LandroidS {
         }
         let message = this.latestUpdate.schedule.map(entry => this.timePeriodToCloudArray(entry.serialize()));
         message[weekday] = this.timePeriodToCloudArray(timePeriod);
-        console.log("Setting new schedule with update for weekday %d to %s", weekday, JSON.stringify(message));
+        this.log.info("Setting new schedule with update for weekday %d to %s", weekday, JSON.stringify(message));
         this.sendMessage(null, {sc: {d: message}});
     }
 
@@ -86,21 +89,7 @@ export class LandroidS {
     }
 
     public init(): Promise<void> {
-        let adapter = {
-            config: Config.getInstance().get("landroid-s"),
-            log: {
-                info: function(msg) { adapter.msg.info.push(msg);},
-                error: function(msg) { adapter.msg.error.push(msg);},
-                debug: function(msg) { adapter.msg.debug.push(msg);},
-                warn: function(msg) { adapter.msg.warn.push(msg);}
-            },
-            msg: {
-                info: [],
-                error: [],
-                debug: [],
-                warn: []
-            }
-        };
+        let adapter: IoBrokerAdapter = new IoBrokerAdapter(Config.getInstance().get("landroid-s"));
         let doInit = function() {
             this.landroidCloud = new LandroidCloud(adapter);
             this.landroidCloud.init(this.updateListener.bind(this));
@@ -110,11 +99,11 @@ export class LandroidS {
                 reject(new Error("Already initialized!"));
             }
             this.initialized = true;
-            console.log("Initializing Landroid Cloud Service...");
+            this.log.info("Initializing Landroid Cloud Service...");
             Mqtt.getInstance().on("mqttMessage", this.onMqttMessage.bind(this));
             let retryInterval;
             let onFirstCloudUpdate = function() {
-                console.log("First cloud update received, finishing initialization");
+                this.log.info("First cloud update received, finishing initialization");
                 clearInterval(retryInterval);
                 resolve();
             };
@@ -122,7 +111,7 @@ export class LandroidS {
             let retryInit = function() {
                 tryCount++;
                 if (tryCount > 1) {
-                    console.log("Could not finish initialization, retrying...");
+                    this.log.info("Could not finish initialization, retrying...");
                     this.landroidCloud.updateListener = null;
                     delete this.landroidCloud;
                 }
@@ -143,12 +132,11 @@ export class LandroidS {
             message = Object.assign(message, params);
         }
         let outMsg = JSON.stringify(message);
-        console.log("Sending to landroid cloud: %s", outMsg);
+        this.log.info("Sending to landroid cloud: %s", outMsg);
         this.landroidCloud.sendMessage(outMsg);
     }
 
     private updateListener(status: any): void {
-        console.log("Incoming Landroid Cloud update: %s", JSON.stringify(status));
         let dataset: LandroidDataset = new LandroidDataset(status);
         this.publishMqtt(this.latestUpdate, dataset);
         this.latestUpdate = dataset;
@@ -189,7 +177,7 @@ export class LandroidS {
                 } else if (payload === "stop") {
                     this.stopMower();
                 } else {
-                    console.error("Invalid MQTT payload for topic %s", topic);
+                    this.log.error("Invalid MQTT payload for topic %s", topic);
                 }
             } else if (topic === "set/rainDelay") {
                 this.setRainDelay(payload);
@@ -199,10 +187,10 @@ export class LandroidS {
                 let weekday = parseInt(topic.substr("set/schedule/".length), 10);
                 this.setSchedule(weekday, String(payload));
             } else {
-                console.error("Unknown MQTT topic: %s", topic);
+                this.log.error("Unknown MQTT topic: %s", topic);
             }
         } catch (e) {
-            console.error("Invalid MQTT payload for topic %s: %s", topic, e);
+            this.log.error("Invalid MQTT payload for topic %s: %s", topic, e);
         }
     }
 

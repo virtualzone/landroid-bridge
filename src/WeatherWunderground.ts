@@ -5,8 +5,16 @@ import * as path from 'path';
 import { Config } from './Config';
 import { App } from './App';
 import { WeatherProvider, WeatherDataset } from './WeatherProvider';
+import { getLogger, Logger } from "log4js";
 
 export class WeatherWunderground extends WeatherProvider {
+    private log: Logger;
+
+    constructor() {
+        super();
+        this.log = getLogger(this.constructor.name);
+    }
+
     public loadCurrent(forceCacheRenewal?: boolean): Promise<WeatherDataset> {
         let config = Config.getInstance().get("scheduler").weather;
         let url = "https://api.wunderground.com/api/" +
@@ -35,14 +43,14 @@ export class WeatherWunderground extends WeatherProvider {
                 if (rawData && !forceCacheRenewal) {
                     onLoaded(rawData, resolve, reject);
                 } else {
-                    console.log("Loading from %s", url);
+                    this.log.info("Loading from %s", url);
                     https.get(url, (res) => {
                         if (!res || res.statusCode !== 200) {
                             reject(new Error("Got invalid status code from api.wunderground.com"));
                             return;
                         }
                         rawData = "";
-                        res.on("error", e => console.error("HTTP error: %s", e));
+                        res.on("error", e => this.log.error("HTTP error: %s", e));
                         res.on("data", (chunk) => rawData += chunk);
                         res.on("end", () => {
                             WeatherProvider.CACHE.put("current", rawData);
@@ -86,14 +94,14 @@ export class WeatherWunderground extends WeatherProvider {
                 if (rawData && !forceCacheRenewal) {
                     onLoaded(rawData, resolve, reject);
                 } else {
-                    console.log("Loading from %s", url);
+                    this.log.info("Loading from %s", url);
                     https.get(url, (res) => {
                         if (!res || res.statusCode !== 200) {
                             reject(new Error("Got invalid status code from api.wunderground.com"));
                             return;
                         }
                         rawData = "";
-                        res.on("error", e => console.error("HTTP error: %s", e));
+                        res.on("error", e => this.log.error("HTTP error: %s", e));
                         res.on("data", (chunk) => rawData += chunk);
                         res.on("end", () => {
                             WeatherProvider.CACHE.put("history", rawData);
@@ -182,14 +190,14 @@ export class WeatherWunderground extends WeatherProvider {
                 if (rawData && !forceCacheRenewal) {
                     onLoaded(rawData, resolve, reject);
                 } else {
-                    console.log("Loading from %s", url);
+                    this.log.info("Loading from %s", url);
                     https.get(url, (res) => {
                         if (!res || res.statusCode !== 200) {
                             reject(new Error("Got invalid status code from api.wunderground.com"));
                             return;
                         }
                         rawData = "";
-                        res.on("error", e => console.error("HTTP error: %s", e));
+                        res.on("error", e => this.log.error("HTTP error: %s", e));
                         res.on("data", (chunk) => rawData += chunk);
                         res.on("end", () => {
                             WeatherProvider.CACHE.put("forecast", rawData);

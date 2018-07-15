@@ -2,8 +2,16 @@ import { BaseRouter } from "./BaseRouter";
 import { Request, Response, NextFunction } from "express";
 import { Scheduler } from "./Scheduler";
 import { Config } from "./Config";
+import { getLogger, Logger } from "log4js";
 
 class SchedulerRouter extends BaseRouter {
+    private log: Logger;
+
+    constructor() {
+        super();
+        this.log = getLogger(this.constructor.name);
+    }
+
     protected init(): void {
         this.router.get("/next7day", this.getNext7Days.bind(this));
         this.router.get("/config", this.getConfig.bind(this));
@@ -16,7 +24,7 @@ class SchedulerRouter extends BaseRouter {
             Object.keys(result).forEach(key => serialized[key] = result[key].serialize());
             res.status(200).send(serialized);
         }).catch(e => {
-            console.error(e);
+            this.log.error(e);
             this.internalServerError(res);
         });
     }
@@ -27,7 +35,7 @@ class SchedulerRouter extends BaseRouter {
             Object.keys(result).forEach(key => serialized[key] = result[key].serialize());
             res.status(200).send(serialized);
         }).catch(e => {
-            console.error(e);
+            this.log.error(e);
             this.internalServerError(res);
         });
     }

@@ -2,15 +2,18 @@ import { CronJob } from "cron";
 import { Config } from "./Config";
 import { Scheduler } from "./Scheduler";
 import { WeatherFactory } from "./WeatherFactory";
+import { getLogger, Logger } from "log4js";
 
 export class ScheduledTasks {
     private static SCHEDULED: boolean = false;
+    private static LOG: Logger;
 
     public static init(): void {
         if (ScheduledTasks.SCHEDULED) {
             throw new Error("Scheduled tasks have already been initialized - can only be called once.");
         }
-        console.log("Initializing scheduled tasks...");
+        ScheduledTasks.LOG = getLogger("ScheduledTasks");
+        ScheduledTasks.LOG.info("Initializing scheduled tasks...");
         ScheduledTasks.SCHEDULED = true;
         try {
             let config = Config.getInstance().get("scheduler");
@@ -23,23 +26,23 @@ export class ScheduledTasks {
                 }
             }
         } catch (e) {
-            console.error(e);
+            ScheduledTasks.LOG.error(e);
         }
     }
 
     private static async applySchedule(): Promise<void> {
-        console.log("Running ScheduledTasks.applySchedule...");
+        ScheduledTasks.LOG.info("Running ScheduledTasks.applySchedule...");
         await new Scheduler().applySchedule();
-        console.log("Finished ScheduledTasks.applySchedule.");
+        ScheduledTasks.LOG.info("Finished ScheduledTasks.applySchedule.");
     }
 
     private static async fetchWeatherData(): Promise<void> {
         let error: boolean = true;
         for (let i = 1; i <= 5 && error; i++) {
             try {
-                console.log("Refreshing weather to cache (try #%d)...", i);
+                ScheduledTasks.LOG.info("Refreshing weather to cache (try #%d)...", i);
                 await WeatherFactory.getProvider().loadHourly10day(true, true);
-                console.log("Successfully refreshed weather cache");
+                ScheduledTasks.LOG.info("Successfully refreshed weather cache");
                 error = false;
             } catch (e) {
                 error = true;
