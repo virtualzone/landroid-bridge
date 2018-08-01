@@ -41,7 +41,9 @@ There is also a pre-built arm32v7 image for Raspberry Pi: ```weweave/landroid-br
     ```
     node dist/server.js
     ```
-1. Optional: Set up an init.d script to start the bridge on system startup (Linux only, see example in initd-script folder).
+1. Optional (Linux only): 
+    1. Set up an init.d script to start the bridge on system startup (see example in initd-script folder).
+    1. Set up a systemctl script to start the bridge on system startup (see example in systemctl-script folder).
 
 ### Security
 Landroid Bridge does not feature any authentication or authorization right now. If you're using MQTT to communicate with the bridge, make sure to use strong passwords to authenticate with your MQTT broker. If you're using HTTP/REST, use a proxy server like nginx or HAProxy that handles the authentication/authorization in front of the bridge.

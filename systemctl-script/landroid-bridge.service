@@ -1,0 +1,19 @@
+[Unit]
+Description=Landroid Bridge
+Documentation=https://github.com/weweave/landroid-bridge
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/node /home/username/landroid-bridge/dist/server.js
+WorkingDirectory=/home/username/landroid-bridge
+Restart=on-failure
+RestartSec=10
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=landroid-bridge
+User=username
+Group=username
+Environment=NODE_ENV=production PORT=3000
+
+[Install]
+WantedBy=multi-user.target
