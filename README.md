@@ -108,6 +108,11 @@ If scheduler.cron is set to false in your config.json, no scheduling is performe
 curl -X POST http://localhost:3000/scheduler/apply
 ```
 
+## Managing multiple mowers
+If you have more than one mower connected to your Landroid Account, you can set the mower to be selected by changing the ```dev_sel``` value in the ```config.json``` file. The default value is 0 (zero-based for the first mower in your account).
+
+If you want to manage more than one mower with this Landroid Bridge, please start multiple instances of the bridge, each with a differnt ```dev_sel``` value. You'll need to set a unique HTTP Port and MQTT Topic per instance then.
+
 ## Connecting to OpenHAB
 To connect this Landroid Bridge to [OpenHAB](http://www.openhab.org/), add the following configurations to your OpenHAB installation after Landroid Bridge is up and running successfully (see above):
 1. Install the [MQTT Binding](https://docs.openhab.org/addons/bindings/mqtt1/readme.html) in OpenHAB (e.g. using the Paper UI).
