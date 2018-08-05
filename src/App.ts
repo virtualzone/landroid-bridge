@@ -67,10 +67,7 @@ export class App extends EventEmitter {
     }
 
     private setupMqtt(): void {
-        let config = Config.getInstance().get("mqtt");
-        if (config && config.enable) {
-            this.mqtt = Mqtt.getInstance();
-        }
+        this.mqtt = Mqtt.getInstance();
     }
 
     private setupRoutes(): void {

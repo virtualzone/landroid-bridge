@@ -13,14 +13,18 @@ export class Mqtt extends EventEmitter {
         super();
         this.log = getLogger(this.constructor.name);
         this.config = Config.getInstance().get("mqtt");
-        if (this.config.topic && this.config.topic !== "" && !(String(this.config.topic).endsWith("/"))) {
-            this.config.topic += "/";
+        if (this.config && this.config.enable) {
+            if (this.config.topic && this.config.topic !== "" && !(String(this.config.topic).endsWith("/"))) {
+                this.config.topic += "/";
+            }
+            this.client = mqttConnect(this.config.url);
+            this.log.info("Connecting to MQTT Broker...");
+            this.client.on("error", this.onError.bind(this));
+            this.client.on("connect", this.onConnect.bind(this));
+            this.client.on("message", this.onMessage.bind(this));
+        } else {
+            this.log.info("MQTT is disabled, skipping initialization");
         }
-        this.client = mqttConnect(this.config.url);
-        this.log.info("Connecting to MQTT Broker...");
-        this.client.on("error", this.onError.bind(this));
-        this.client.on("connect", this.onConnect.bind(this));
-        this.client.on("message", this.onMessage.bind(this));
     }
 
     public publish(topic: string, message: string, retain?: boolean): void {
