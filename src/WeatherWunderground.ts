@@ -124,6 +124,11 @@ export class WeatherWunderground extends WeatherProvider {
             ".json";
         let onLoaded = function(rawData: string, resolve, reject) {
             let json = JSON.parse(rawData);
+            if (json && json.response && json.response.error) {
+                this.log.error("Error '%s' from Wunderground API: %s", json.response.error.type, json.response.error.description);
+                reject(new Error("Error from api.wunderground.com: " + json.response.error.type));
+                return;
+            }
             if (!json || !json.response || !json.hourly_forecast) {
                 reject(new Error("Invalid JSON response from api.wunderground.com"));
                 return;
@@ -184,11 +189,11 @@ export class WeatherWunderground extends WeatherProvider {
             if (WeatherProvider.USE_FILES) {
                 let filePath: string = path.join(process.cwd(), "./test/forecast.json");
                 let rawData: string = fs.readFileSync(filePath, "utf8");
-                onLoaded(rawData, resolve, reject);
+                onLoaded.call(this, rawData, resolve, reject);
             } else {
                 let rawData = WeatherProvider.CACHE.get("forecast");
                 if (rawData && !forceCacheRenewal) {
-                    onLoaded(rawData, resolve, reject);
+                    onLoaded.call(this, rawData, resolve, reject);
                 } else {
                     this.log.info("Loading from %s", url);
                     https.get(url, (res) => {
