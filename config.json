@@ -5,7 +5,8 @@
     "landroid-s": {
         "enable": true,
         "email": "really@change.me",
-        "pwd": "PASSWORD"
+        "pwd": "PASSWORD",
+        "dev_sel": 0
     },
     "mqtt": {
         "enable": true,
