@@ -1,4 +1,4 @@
-import * as LandroidCloud from "iobroker.landroid-s/lib/landroid-cloud-2";
+import * as LandroidCloud from "iobroker.landroid-s/lib/mqttCloud";
 import { Config } from "./Config";
 import { LandroidDataset } from "./LandroidDataset";
 import { Mqtt } from "./Mqtt";
@@ -55,7 +55,7 @@ export class LandroidS {
         if (isNaN(weekday) || weekday < 0 || weekday > 6) {
             throw Error("Weekday must be >= 0 and <= 6 where 0 is Sunday");
         }
-        if (!this.latestUpdate || !this.latestUpdate.schedule) {
+        if (!this.latestUpdate || !this.latestUpdate.schedule) {
             throw Error("Can only set new schedule when current schedule has been retrieved from cloud service");
         }
         let timePeriod = this.jsonToObject(val);
@@ -151,10 +151,10 @@ export class LandroidS {
         let curr = currentDataset.serialize();
         for (let key of Object.keys(curr)) {
             let val = curr[key];
-            if (!prev || prev[key] !== val) {
+            if (!prev || prev[key] !== val) {
                 if (val instanceof Array) {
                     val.forEach((entry, i) => {
-                        if (!prev || !prev[key] || !prev[key][i] || JSON.stringify(prev[key][i]) !== JSON.stringify(val[i])) {
+                        if (!prev || !prev[key] || !prev[key][i] || JSON.stringify(prev[key][i]) !== JSON.stringify(val[i])) {
                             Mqtt.getInstance().publish("status/" + key + "/" + i, JSON.stringify(val[i]), true);
                         }
                     });
