@@ -18,6 +18,9 @@ export class LandroidDataset {
     batteryVoltage: number;
     batteryTemperature: number;
     batteryLevel: number;
+    pitch: number;
+    roll: number;
+    yaw: number;
     errorCode: number;
     errorDescription: string;
     statusCode: number;
@@ -49,6 +52,9 @@ export class LandroidDataset {
             batteryVoltage: this.batteryVoltage,
             batteryTemperature: this.batteryTemperature,
             batteryLevel: this.batteryLevel,
+            pitch: this.pitch,
+            roll: this.roll,
+            yaw: this.yaw,
             errorCode: this.errorCode,
             errorDescription: this.errorDescription,
             statusCode: this.statusCode,
@@ -101,6 +107,11 @@ export class LandroidDataset {
             this.statusDescription = LandroidDataset.STATUS_CODES[this.statusCode];
             this.errorCode = Number(readings["dat"]["le"]).valueOf();
             this.errorDescription = LandroidDataset.ERROR_CODES[this.errorCode];
+            if (readings["dat"]["dmp"]) {
+                this.pitch = Number(readings["dat"]["dmp"][0]).valueOf();
+                this.roll  = Number(readings["dat"]["dmp"][1]).valueOf();
+                this.yaw   = Number(readings["dat"]["dmp"][2]).valueOf();
+            }
         }
     }
 

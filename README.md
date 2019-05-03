@@ -181,6 +181,9 @@ curl -X PUT -H "Content-Type: application/json" -d '{"startHour":10,"startMinute
 * landroid/status/batteryVoltage
 * landroid/status/batteryTemperature
 * landroid/status/batteryLevel
+* landroid/status/pitch
+* landroid/status/roll
+* landroid/status/yaw
 * landroid/status/errorCode
 * landroid/status/errorDescription: 
 * landroid/status/statusCode
