@@ -177,7 +177,7 @@ export class LandroidS {
                 } else if (payload === "stop") {
                     this.stopMower();
                 } else {
-                    this.log.error("Invalid MQTT payload for topic %s", topic);
+                    this.log.error("Invalid MQTT payload for topic %s", payload %s, topic, payload);
                 }
             } else if (topic === "set/rainDelay") {
                 this.setRainDelay(payload);
