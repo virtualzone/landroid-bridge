@@ -26,6 +26,7 @@ export class LandroidDataset {
     statusCode: number;
     statusDescription: string;
     schedule: TimePeriod[];
+    jsonData: object;
 
     constructor(readings: any) {
         if (readings) {
@@ -59,7 +60,8 @@ export class LandroidDataset {
             errorDescription: this.errorDescription,
             statusCode: this.statusCode,
             statusDescription: this.statusDescription,
-            schedule: this.schedule.map(timePeriod => timePeriod.serialize())
+            schedule: this.schedule.map(timePeriod => timePeriod.serialize()),
+            jsonData: JSON.stringify(this.jsonData)
         };
     }
 
@@ -88,18 +90,6 @@ export class LandroidDataset {
             }
         }
         if (readings["dat"]) {
-            if (readings["dat"]["st"]) {
-                this.totalTime = Number(readings["dat"]["st"]["wt"]).valueOf();
-                this.totalDistance = Number(readings["dat"]["st"]["d"]).valueOf();
-                this.totalBladeTime = Number(readings["dat"]["st"]["b"]).valueOf();
-            }
-            if (readings["dat"]["bt"]) {
-                this.batteryChargeCycle = Number(readings["dat"]["bt"]["nr"]).valueOf();
-                this.batteryCharging = (readings["dat"]["bt"]["c"] ? true : false);
-                this.batteryVoltage = Number(readings["dat"]["bt"]["v"]).valueOf();
-                this.batteryTemperature = Number(readings["dat"]["bt"]["t"]).valueOf();
-                this.batteryLevel = Number(readings["dat"]["bt"]["p"]).valueOf();
-            }
             this.macAddress = readings["dat"]["mac"];
             this.firmware = readings["dat"]["fw"];
             this.wifiQuality = Number(readings["dat"]["rsi"]).valueOf();
@@ -107,10 +97,40 @@ export class LandroidDataset {
             this.statusDescription = LandroidDataset.STATUS_CODES[this.statusCode];
             this.errorCode = Number(readings["dat"]["le"]).valueOf();
             this.errorDescription = LandroidDataset.ERROR_CODES[this.errorCode];
+            this.jsonData = {
+                    wifiQuality: this.wifiQuality,
+                    statusCode: this.statusCode,
+                    statusDescription: this.statusDescription,
+                    errorCode: this.errorCode,
+                    errorDescription: this.errorDescription
+            };
+            if (readings["dat"]["st"]) {
+                this.totalTime = Number(readings["dat"]["st"]["wt"]).valueOf();
+                this.totalDistance = Number(readings["dat"]["st"]["d"]).valueOf();
+                this.totalBladeTime = Number(readings["dat"]["st"]["b"]).valueOf();
+                this.jsonData["totalTime"] = this.totalTime;
+                this.jsonData["totalDistance"] = this.totalDistance;
+                this.jsonData["totalBladeTime"] = this.totalBladeTime;
+            }
+            if (readings["dat"]["bt"]) {
+                this.batteryChargeCycle = Number(readings["dat"]["bt"]["nr"]).valueOf();
+                this.batteryCharging = (readings["dat"]["bt"]["c"] ? true : false);
+                this.batteryVoltage = Number(readings["dat"]["bt"]["v"]).valueOf();
+                this.batteryTemperature = Number(readings["dat"]["bt"]["t"]).valueOf();
+                this.batteryLevel = Number(readings["dat"]["bt"]["p"]).valueOf();
+                this.jsonData["batteryChargeCycle"] = this.batteryChargeCycle;
+                this.jsonData["batteryCharging"] = this.batteryCharging;
+                this.jsonData["batteryVoltage"] = this.batteryVoltage;
+                this.jsonData["batteryTemperature"] = this.batteryTemperature;
+                this.jsonData["batteryLevel"] = this.batteryLevel;
+            }
             if (readings["dat"]["dmp"]) {
                 this.pitch = Number(readings["dat"]["dmp"][0]).valueOf();
                 this.roll  = Number(readings["dat"]["dmp"][1]).valueOf();
                 this.yaw   = Number(readings["dat"]["dmp"][2]).valueOf();
+                this.jsonData["pitch"] = this.pitch;
+                this.jsonData["roll"] = this.roll;
+                this.jsonData["yaw"] = this.yaw;
             }
         }
     }
