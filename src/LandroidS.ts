@@ -167,6 +167,9 @@ export class LandroidS {
 
     private onMqttMessage(topic: string, payload: any): void {
         try {
+            if(typeof payload !== "string") {
+                payload = payload.toString();
+            }
             if (topic === "set/start") {
                 this.startMower();
             } else if (topic === "set/stop") {
@@ -177,7 +180,7 @@ export class LandroidS {
                 } else if (payload === "stop") {
                     this.stopMower();
                 } else {
-                    this.log.error("Invalid MQTT payload for topic %s", topic);
+                    this.log.error("Invalid MQTT payload %s for topic %s", payload, topic);
                 }
             } else if (topic === "set/rainDelay") {
                 this.setRainDelay(payload);
@@ -185,12 +188,12 @@ export class LandroidS {
                 this.setTimeExtension(payload);
             } else if (topic.startsWith("set/schedule/")) {
                 let weekday = parseInt(topic.substr("set/schedule/".length), 10);
-                this.setSchedule(weekday, String(payload));
+                this.setSchedule(weekday, payload);
             } else {
                 this.log.error("Unknown MQTT topic: %s", topic);
             }
         } catch (e) {
-            this.log.error("Invalid MQTT payload for topic %s: %s", topic, e);
+            this.log.error("Invalid MQTT payload %s for topic %s", e, topic);
         }
     }
 
