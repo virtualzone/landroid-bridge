@@ -3,6 +3,7 @@ The mower can be incorporated into Home Assistant as a Vacuum, here is the examp
 
 # Home Assistant config:
 ```
+...
 vacuum:
         - platform: mqtt
           name: "My Landroid"
@@ -18,13 +19,16 @@ vacuum:
           error_topic: "mylandroid/status/statusDescription"
           error_template: "{{ value }}"
           json_attributes_topic: "mylandroid/status/jsonData"
+...
 ```
 
 # Corresponding landroid-bridge config:
 ```
+...
     "mqtt": {
         "enable": true,
         "url": "mqtt://<yourbroker>",
         "topic": "mylandroid"
     },
+...
 ```
