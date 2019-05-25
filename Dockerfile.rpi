@@ -1,4 +1,4 @@
-FROM arm32v7/node:8 as node_cache
+FROM arm32v7/node:11 as node_cache
 
 WORKDIR /usr/src/app
 
@@ -15,7 +15,7 @@ COPY . .
 RUN npm run build-prod
 
 #2nd stage
-FROM node:8.16.0-alpine 
+FROM node:11-alpine
 WORKDIR /usr/src/app
 USER root
 

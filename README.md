@@ -28,7 +28,7 @@ You can see the current readings and scheduler results on an integrated web inte
 There is also a pre-built arm32v7 image for Raspberry Pi: ```virtualzone/landroid-bridge:arm32v7```
 
 ### Building from source
-1. Make sure you have [Node.js](https://nodejs.org) installed (tested with Node.js v8).
+1. Make sure you have [Node.js](https://nodejs.org) installed (tested with Node.js v11).
 1. Check out the source code and build it:
     ```
     git clone https://github.com/virtualzone/landroid-bridge.git
