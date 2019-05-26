@@ -53,6 +53,42 @@ You can access the web interface at:
 
 http://localhost:3000
 
+## Setting up MQTT
+To connect to an MQTT broker without any authentication, please modify your config.json like this:
+
+```
+"mqtt": {
+    "enable": true,
+    "url": "mqtt://username:password@localhost",
+    "topic": "landroid"
+}
+```
+
+If your MQTT broker requires username/password authentication:
+
+```
+"mqtt": {
+    "enable": true,
+    "url": "mqtt://username:password@localhost",
+    "topic": "landroid",
+    "username": "optional",
+    "password": "optional"
+}
+```
+
+To use SSL/TLS, specify the paths to the CA, Key and Cert files (paths relative to the bridge's working directory):
+
+```
+"mqtt": {
+    "enable": true,
+    "url": "mqtt://username:password@localhost",
+    "topic": "landroid",
+    "caFile": "./optional_path_to_ca_file.crt",
+    "keyFile": "./optional_path_to_key_file.key",
+    "certFile": "./optional_path_to_cert_file.crt"
+}
+```
+
 ## Configuring the scheduler
 To enable and configure the scheduler modify your config.json:
 
