@@ -8,6 +8,7 @@ class LandroidSRouter extends BaseRouter {
         this.router.get("/status", this.status.bind(this));
         this.router.post("/start", this.startMower.bind(this));
         this.router.post("/stop", this.stopMower.bind(this));
+        this.router.post("/pause", this.pauseMower.bind(this));
         this.router.put("/set/rainDelay/:value", this.setRainDelay.bind(this));
         this.router.put("/set/timeExtension/:value", this.setTimeExtension.bind(this));
         this.router.put("/set/schedule/:weekday", this.setSchedule.bind(this));
@@ -29,6 +30,11 @@ class LandroidSRouter extends BaseRouter {
 
     private stopMower(req: Request, res: Response, next: NextFunction): void {
         LandroidS.getInstance().stopMower();
+        this.ok(res);
+    }
+
+    private pauseMower(req: Request, res: Response, next: NextFunction): void {
+        LandroidS.getInstance().pauseMower();
         this.ok(res);
     }
 

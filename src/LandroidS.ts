@@ -29,6 +29,10 @@ export class LandroidS {
         this.sendMessage(1);
     }
 
+    public pauseMower(): void {
+        this.sendMessage(2);
+    }
+
     public stopMower(): void {
         this.sendMessage(3);
     }
@@ -171,11 +175,15 @@ export class LandroidS {
                 this.startMower();
             } else if (topic === "set/stop") {
                 this.stopMower();
+            } else if (topic === "set/pause") {
+                this.pauseMower();
             } else if (topic === "set/mow") {
                 if (String(payload) === "start") {
                     this.startMower();
                 } else if (String(payload) === "stop") {
                     this.stopMower();
+                } else if (String(payload) === "pause") {
+                    this.pauseMower();
                 } else {
                     this.log.error("Invalid MQTT payload for topic %s: %s", topic, payload);
                 }
