@@ -32,12 +32,6 @@ export class Mqtt extends EventEmitter {
 
     private buildConnectOptions(): IClientOptions {
         let options: IClientOptions = {};
-        if (this.config.username) {
-            options.username = this.config.username;
-        }
-        if (this.config.password) {
-            options.password = this.config.password;
-        }
         if (this.config.clientId) {
             options.clientId = this.config.clientId;
         }

@@ -59,7 +59,7 @@ To connect to an MQTT broker without any authentication, please modify your conf
 ```
 "mqtt": {
     "enable": true,
-    "url": "mqtt://username:password@localhost",
+    "url": "mqtt://localhost",
     "topic": "landroid"
 }
 ```
@@ -70,9 +70,7 @@ If your MQTT broker requires username/password authentication:
 "mqtt": {
     "enable": true,
     "url": "mqtt://username:password@localhost",
-    "topic": "landroid",
-    "username": "optional",
-    "password": "optional"
+    "topic": "landroid"
 }
 ```
 
@@ -81,7 +79,7 @@ To use SSL/TLS, specify the paths to the CA, Key and Cert files (paths relative 
 ```
 "mqtt": {
     "enable": true,
-    "url": "mqtt://username:password@localhost",
+    "url": "mqtts://localhost",
     "topic": "landroid",
     "caFile": "./optional_path_to_ca_file.crt",
     "keyFile": "./optional_path_to_key_file.key",
