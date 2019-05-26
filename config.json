@@ -11,7 +11,13 @@
     "mqtt": {
         "enable": true,
         "url": "mqtt://username:password@localhost",
-        "topic": "landroid"
+        "topic": "landroid",
+        "username": "optional",
+        "password": "optional",
+        "clientId": "optional",
+        "caFile": "./optional_path_to_ca_file.crt",
+        "keyFile": "./optional_path_to_key_file.key",
+        "certFile": "./optional_path_to_cert_file.crt"
     },
     "logLevel": "info",
     "scheduler": {
