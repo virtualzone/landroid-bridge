@@ -74,7 +74,7 @@ If your MQTT broker requires username/password authentication:
 }
 ```
 
-To use SSL/TLS, specify the paths to the CA, Key and Cert files (paths relative to the bridge's working directory):
+To use SSL/TLS, specify the paths to the CA, Key and Cert files (paths relative to the bridge's working directory). You can optionally allow self-signed certificates:
 
 ```
 "mqtt": {
@@ -83,7 +83,8 @@ To use SSL/TLS, specify the paths to the CA, Key and Cert files (paths relative 
     "topic": "landroid",
     "caFile": "./optional_path_to_ca_file.crt",
     "keyFile": "./optional_path_to_key_file.key",
-    "certFile": "./optional_path_to_cert_file.crt"
+    "certFile": "./optional_path_to_cert_file.crt",
+    "allowSelfSigned": true
 }
 ```
 

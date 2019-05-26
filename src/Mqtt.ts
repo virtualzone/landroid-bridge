@@ -47,6 +47,9 @@ export class Mqtt extends EventEmitter {
             let filePath: string = path.join(process.cwd(), this.config.certFile);
             options.cert = fs.readFileSync(filePath, "utf8");
         }
+        if (this.config.allowSelfSigned) {
+            options.rejectUnauthorized = false;
+        }
         return options;
     }
 

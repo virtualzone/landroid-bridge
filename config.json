@@ -15,7 +15,8 @@
         "clientId": "optional",
         "caFile": "./optional_path_to_ca_file.crt",
         "keyFile": "./optional_path_to_key_file.key",
-        "certFile": "./optional_path_to_cert_file.crt"
+        "certFile": "./optional_path_to_cert_file.crt",
+        "allowSelfSigned": true
     },
     "logLevel": "info",
     "scheduler": {
