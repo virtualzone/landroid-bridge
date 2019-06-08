@@ -174,6 +174,7 @@ To connect this Landroid Bridge to [OpenHAB](http://www.openhab.org/), add the f
 * Set rain delay: PUT /landroid-s/set/rainDelay/x (where 0 <= x <= 300)
 * Set time extension: PUT /landroid-s/set/timeExtension/x (where -100 <= x <= 100)
 * Set work time schedule: PUT /landroid-s/set/schedule/n (where 0 <= n <= 6, 0 is Sunday)
+* Poll landroid cloud: POST /landroid-s/poll
 
 ### Examples
 The following examples use the cURL command line util.
@@ -234,6 +235,7 @@ curl -X PUT -H "Content-Type: application/json" -d '{"startHour":10,"startMinute
 * landroid/set/rainDelay (sets rain delay in minutes, supply delay value as payload)
 * landroid/set/timeExtension (sets time extension in percent, supply percentage value as payload)
 * landroid/set/schedule/n (sets work time for weekday n, where 0 is Sunday – see examples below)
+* landroid/set/poll (polls data from landroid cloud)
 
 ### Examples
 The following examples use the mosquitto_pub command line util of the Mosquitto MQTT broker.

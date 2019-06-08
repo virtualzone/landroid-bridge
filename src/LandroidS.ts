@@ -72,6 +72,10 @@ export class LandroidS {
         this.sendMessage(null, {sc: {d: message}});
     }
 
+    public poll(): void {
+        this.sendMessage(null, {});
+    }
+
     private timePeriodToCloudArray(timePeriod: any): Array<any> {
         return [
             ("00" + timePeriod["startHour"]).slice(-2) + ":" + ("00" + timePeriod["startMinute"]).slice(-2),
@@ -194,6 +198,8 @@ export class LandroidS {
             } else if (topic.startsWith("set/schedule/")) {
                 let weekday = parseInt(topic.substr("set/schedule/".length), 10);
                 this.setSchedule(weekday, String(payload));
+            } else if (topic === "set/poll") {
+                this.poll();
             } else {
                 this.log.error("Unknown MQTT topic: %s", topic);
             }

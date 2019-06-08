@@ -12,6 +12,7 @@ class LandroidSRouter extends BaseRouter {
         this.router.put("/set/rainDelay/:value", this.setRainDelay.bind(this));
         this.router.put("/set/timeExtension/:value", this.setTimeExtension.bind(this));
         this.router.put("/set/schedule/:weekday", this.setSchedule.bind(this));
+        this.router.post("/poll", this.poll.bind(this));
     }
 
     private status(req: Request, res: Response, next: NextFunction): void {
@@ -67,6 +68,11 @@ class LandroidSRouter extends BaseRouter {
         } catch (e) {
             this.badRequest(res, e.message);
         }
+    }
+
+    private poll(req: Request, res: Response, next: NextFunction): void {
+        LandroidS.getInstance().poll();
+        this.ok(res);
     }
 }
 
