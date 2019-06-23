@@ -35,7 +35,7 @@ export class Scheduler {
                     let item = schedule[key];
                     let date = moment(key);
                     settings.push([date, item.durationMinutes]);
-                    if (i <= 7) {
+                    if (i < 7) {
                         LandroidS.getInstance().setSchedule(date.weekday(), item.serialize());
                     }
                 });
