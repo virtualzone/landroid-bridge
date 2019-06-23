@@ -169,7 +169,8 @@ To connect this Landroid Bridge to [OpenHAB](http://www.openhab.org/), add the f
 ## HTTP REST URLs
 * Get status as JSON: GET /landroid-s/status
 * Start mower: POST /landroid-s/start
-* Stop mower: POST /landroid-s/stop
+* Send mower home: POST /landroid-s/stop
+* Pause mower: POST /landroid-s/pause
 * Set rain delay: PUT /landroid-s/set/rainDelay/x (where 0 <= x <= 300)
 * Set time extension: PUT /landroid-s/set/timeExtension/x (where -100 <= x <= 100)
 * Set work time schedule: PUT /landroid-s/set/schedule/n (where 0 <= n <= 6, 0 is Sunday)
@@ -229,7 +230,8 @@ curl -X PUT -H "Content-Type: application/json" -d '{"startHour":10,"startMinute
 ### Published by your application (the bridge will perform updates)
 * landroid/set/start (starts the mower)
 * landroid/set/stop (stops the mower and sends it home)
-* landroid/set/mow (payload "start" starts the mower, "stop" stops the mower)
+* landroid/set/pause (stops the mower)
+* landroid/set/mow (payload "start" starts the mower, "stop" sends the mover home, "pause" stops the mower)
 * landroid/set/rainDelay (sets rain delay in minutes, supply delay value as payload)
 * landroid/set/timeExtension (sets time extension in percent, supply percentage value as payload)
 * landroid/set/schedule/n (sets work time for weekday n, where 0 is Sunday – see examples below)
