@@ -42,7 +42,7 @@ class LandroidSRouter extends BaseRouter {
     private setRainDelay(req: Request, res: Response, next: NextFunction): void {
         let value = req.params.value;
         try {
-            LandroidS.getInstance().setRainDelay(value);
+            LandroidS.getInstance().setRainDelay(+value);
             this.ok(res);
         } catch (e) {
             this.badRequest(res, e.message);
@@ -52,7 +52,7 @@ class LandroidSRouter extends BaseRouter {
     private setTimeExtension(req: Request, res: Response, next: NextFunction): void {
         let value = req.params.value;
         try {
-            LandroidS.getInstance().setTimeExtension(value);
+            LandroidS.getInstance().setTimeExtension(+value);
             this.ok(res);
         } catch (e) {
             this.badRequest(res, e.message);
@@ -63,7 +63,7 @@ class LandroidSRouter extends BaseRouter {
         let weekday = req.params.weekday;
         let payload = req.body;
         try {
-            LandroidS.getInstance().setSchedule(weekday, payload);
+            LandroidS.getInstance().setSchedule(+weekday, payload);
             this.ok(res);
         } catch (e) {
             this.badRequest(res, e.message);
