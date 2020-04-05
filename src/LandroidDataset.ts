@@ -161,7 +161,9 @@ export class LandroidDataset {
         12: "Battery low",
         13: "Reverse wire",
         14: "Charge error",
-        15: "Timeout finding home"
+        15: "Timeout finding home",
+	16: "Locked",
+        17: "Battery temperature error"
     };
 }
 
