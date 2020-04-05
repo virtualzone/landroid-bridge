@@ -1,3 +1,10 @@
+# Warning
+This repository is currently unmaintained. As I'm not using a Landroid mower anymore, it's impossible for me to update and test any changes. Sorry for that!
+
+You can still try to use it at your own risk.
+
+Please take a look at the issues. There are some great hints on how to get the bridge working with some workarounds. Thanks to all the dedicated people!
+
 # Landroid Bridge
 Publishes readings from the Worx Landroid S Lawn Mower via HTTP (REST, JSON) and MQTT. Allows for modifying settings via HTTP and MQTT.
 
