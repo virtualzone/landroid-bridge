@@ -5,6 +5,7 @@ RUN cd /tmp && \
 
 FROM arm32v7/node:12-alpine AS prod
 COPY --from=qemu /tmp/qemu-arm-static /usr/bin/
+RUN apk add --no-cache --update build-base python3
 WORKDIR /usr/src/app
 # Add package.json
 COPY package*.json .
