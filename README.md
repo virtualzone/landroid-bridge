@@ -32,7 +32,7 @@ You can see the current readings and scheduler results on an integrated web inte
         virtualzone/landroid-bridge
     ```
 
-There is also a pre-built arm32v7 image for Raspberry Pi: ```virtualzone/landroid-bridge:arm32v7```
+The pre-built Docker images are multi-arch images for amd64, arm32v6, arm32v7 and arm64v8. The correct image for your architecture will be used automatically.
 
 ### Building from source
 1. Make sure you have [Node.js](https://nodejs.org) installed (tested with Node.js v11).
