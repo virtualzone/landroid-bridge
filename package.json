@@ -34,7 +34,7 @@
     "cache": "^2.1.0",
     "cron": "^1.7.1",
     "express": "^4.17.0",
-    "iobroker.landroid-s": "github:MeisterTR/ioBroker.landroid-s",
+    "iobroker.landroid-s": "github:MeisterTR/ioBroker.landroid-s#40bf869b5f9e0936af26a226b4bb251f950e9d49",
     "log4js": "^4.3.0",
     "moment": "^2.24.0",
     "mqtt": "^2.18.8",
