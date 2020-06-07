@@ -1,4 +1,5 @@
 FROM amd64/node:12-alpine AS prod
+RUN apk --update add --no-cache git
 WORKDIR /usr/src/app
 # Add package.json
 COPY package*.json .
