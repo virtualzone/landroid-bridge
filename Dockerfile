@@ -25,5 +25,6 @@ LABEL org.label-schema.build-date=$BUILD_DATE \
         org.label-schema.vcs-url="https://github.com/virtualzone/landroid-bridge" \
         org.label-schema.schema-version="1.0"
 COPY --from=build /usr/src/app/dist ./dist
+COPY www/ ./www/
 EXPOSE 3000
 CMD [ "node", "dist/server.js" ]

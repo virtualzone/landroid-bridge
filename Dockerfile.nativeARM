@@ -30,6 +30,7 @@ FROM prod as final
 RUN apk del build-dependencies
 
 COPY --from=build /usr/src/app/dist ./dist
+COPY www/ ./www/
 
 EXPOSE 3000
 CMD [ "node", "dist/server.js" ]
